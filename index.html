@@ -94,7 +94,7 @@
       max-width: 650px;
       height: auto;
       aspect-ratio: 13 / 6;
-      margin: 0 auto 20px auto;
+      margin: 0 auto 30px auto;
       border: 1px solid #444;
       background: #2b1a10;
       border-radius: 8px;
@@ -211,10 +211,95 @@
     button:hover {
       background-color: #555;
     }
-    #feedback {
-      margin-top: 20px;
-      font-size: 18px;
+    #new-task {
+      width: 45px;
+      height: 45px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: linear-gradient(135deg, #444 0%, #333 100%);
+      border: 2px solid #555;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    #new-task:hover {
+      background: linear-gradient(135deg, #555 0%, #444 100%);
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    #new-task::before {
+      content: '↻';
+      font-size: 20px;
       font-weight: bold;
+    }
+    #feedback {
+      margin: 20px auto 40px auto;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 6px;
+      max-width: 500px;
+      text-align: center;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 1px solid #444;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+    #feedback:empty {
+      opacity: 0;
+    }
+    #task {
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 2px solid #444;
+      border-radius: 12px;
+      padding: 20px 25px;
+      margin: 30px auto;
+      max-width: 650px;
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #f1f1f1;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      min-height: 80px;
+    }
+    #task-text {
+      flex: 1;
+    }
+    #task::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ffcc00, #ff6b6b, #4ecdc4, #45b7d1);
+    }
+    #task-container {
+      margin: 30px 0;
+    }
+    .task-label {
+      display: block;
+      font-size: 0.8em;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: 400;
     }
     #interval-cheatsheet {
       margin-top: 30px;
@@ -287,8 +372,20 @@
         font-size: 14px;
         padding: 10px 20px;
       }
+      #new-task {
+        width: 45px;
+        height: 45px;
+      }
+      #new-task::before {
+        font-size: 20px;
+      }
       .string-hitbox {
         height: 8px;
+      }
+      #task {
+        font-size: 1.1em;
+        padding: 15px 20px;
+        margin: 20px 10px;
       }
     }
     @media (max-width: 400px) {
@@ -349,10 +446,15 @@
       </div>
     </div>
   </div>
+  <div id="task-container">
+    <span class="task-label">Current Task</span>
+    <div id="task">
+      <span id="task-text"></span>
+      <button id="new-task"></button>
+    </div>
+  </div>
+  <div id="feedback"></div>
   <div id="fretboard"></div>
-  <button id="new-task">New Task</button>
-  <p id="task"></p>
-  <p id="feedback"></p>
   <div id="interval-cheatsheet">
     <h3>Interval Reference Guide</h3>
     <div class="interval-row">
@@ -421,7 +523,7 @@
     const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const stringOffsets = [4, 9, 2, 7, 11, 4]; // 1=E, 2=A, 3=D, 4=G, 5=B, 6=E
     const fretboard = document.getElementById('fretboard');
-    const taskDisplay = document.getElementById('task');
+    const taskDisplay = document.getElementById('task-text');
     const feedback = document.getElementById('feedback');
     const stringSelect = document.getElementById('string-select');
     const noteTypeSelect = document.getElementById('note-type-select');
