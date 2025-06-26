@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn your fretboard you mug!</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      text-align: center;
+      padding: 40px 20px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 30px;
+      color: #f1f1f1;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #controls {
+      margin-bottom: 40px;
+      text-align: right;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    select {
+      padding: 6px 12px;
+      font-size: 16px;
+      margin-left: 10px;
+      margin-right: 20px;
+    }
+    #fretboard {
+      position: relative;
+      width: 100%;
+      max-width: 650px;
+      height: auto;
+      aspect-ratio: 13 / 6;
+      margin: 0 auto 20px auto;
+      border: 1px solid #444;
+      background: #2b1a10;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .string-hitbox {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 16px;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+    .string-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 2px;
+      z-index: 2;
+    }
+    .string-hitbox:nth-child(1) .string-line { background-color: #666; }
+    .string-hitbox:nth-child(2) .string-line { background-color: #777; }
+    .string-hitbox:nth-child(3) .string-line { background-color: #888; }
+    .string-hitbox:nth-child(4) .string-line { background-color: #999; }
+    .string-hitbox:nth-child(5) .string-line { background-color: #aaa; }
+    .string-hitbox:nth-child(6) .string-line { background-color: #bbb; }
+    .glow .string-line {
+      box-shadow: 0 0 10px 2px rgba(255, 255, 100, 0.8);
+    }
+    .fret-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: silver;
+    }
+    .fret-label {
+      position: absolute;
+      top: -25px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #ccc;
+      transform: translateX(-50%);
+    }
+    .marker {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .marker.correct {
+      box-shadow: 0 0 10px 2px lightgreen;
+    }
+    .marker.incorrect {
+      box-shadow: 0 0 10px 2px lightcoral;
+    }
+    .marker.hint {
+      box-shadow: 0 0 10px 2px lightgreen;
+    }
+    .dot-marker {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+    }
+    .note-label {
+      position: absolute;
+      font-size: 10px;
+      font-weight: bold;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 2px 4px;
+      border-radius: 3px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .note-label.natural {
+      color: #fff;
+    }
+    .note-label.accidental {
+      color: #ffcc00;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    #feedback {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    #interval-cheatsheet {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #1a1a1a;
+      border-radius: 8px;
+      border: 1px solid #444;
+      text-align: left;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #interval-cheatsheet h3 {
+      margin-top: 0;
+      color: #f1f1f1;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .interval-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #333;
+    }
+    .interval-row:last-child {
+      border-bottom: none;
+    }
+    .interval-name {
+      font-weight: bold;
+      color: #ffcc00;
+      min-width: 120px;
+    }
+    .interval-semitone {
+      color: #ccc;
+      min-width: 80px;
+    }
+    .interval-description {
+      color: #aaa;
+      flex: 1;
+      margin-left: 20px;
+    }
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 1.5em;
+      }
+      .fret-label {
+        font-size: 10px;
+        top: -20px;
+      }
+      button {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+      #controls {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Learn your fretboard you mug!</h1>
+  <div id="controls">
+  <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <label for="mode-select">Training mode:</label>
+      <select id="mode-select">
+        <option value="note">Note Training</option>
+        <option value="interval">Interval Training</option>
+      </select>
+    </div>
+    <div>
+      <label for="show-notes-toggle">Show Notes:</label>
+      <input type="checkbox" id="show-notes-toggle" style="margin-left: 10px;">
+    </div>
+  </div>
+  <div id="note-controls" style="text-align: left;">
+    <div style="margin-bottom: 10px;">
+      <label for="string-select">Choose string:</label>
+      <select id="string-select">
+        <option value="all">All</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="note-type-select">Note type:</label>
+      <select id="note-type-select">
+        <option value="all">All</option>
+        <option value="natural">Naturals only</option>
+        <option value="accidental">Sharps & Flats</option>
+      </select>
+    </div>
+  </div>
+</div>
+  <div id="fretboard"></div>
+  <button id="new-task">New Task</button>
+  <p id="task"></p>
+  <p id="feedback"></p>
+  <div id="interval-cheatsheet">
+    <h3>Interval Reference Guide</h3>
+    <div class="interval-row">
+      <span class="interval-name">Minor 2nd</span>
+      <span class="interval-semitone">1 semitone</span>
+      <span class="interval-description">Half step up (e.g., C to C#)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Major 2nd</span>
+      <span class="interval-semitone">2 semitones</span>
+      <span class="interval-description">Whole step up (e.g., C to D)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Minor 3rd</span>
+      <span class="interval-semitone">3 semitones</span>
+      <span class="interval-description">Three half steps up (e.g., C to D#)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Major 3rd</span>
+      <span class="interval-semitone">4 semitones</span>
+      <span class="interval-description">Four half steps up (e.g., C to E)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Perfect 4th</span>
+      <span class="interval-semitone">5 semitones</span>
+      <span class="interval-description">Five half steps up (e.g., C to F)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Tritone</span>
+      <span class="interval-semitone">6 semitones</span>
+      <span class="interval-description">Six half steps up (e.g., C to F#)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Perfect 5th</span>
+      <span class="interval-semitone">7 semitones</span>
+      <span class="interval-description">Seven half steps up (e.g., C to G)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Minor 6th</span>
+      <span class="interval-semitone">8 semitones</span>
+      <span class="interval-description">Eight half steps up (e.g., C to G#)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Major 6th</span>
+      <span class="interval-semitone">9 semitones</span>
+      <span class="interval-description">Nine half steps up (e.g., C to A)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Minor 7th</span>
+      <span class="interval-semitone">10 semitones</span>
+      <span class="interval-description">Ten half steps up (e.g., C to A#)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Major 7th</span>
+      <span class="interval-semitone">11 semitones</span>
+      <span class="interval-description">Eleven half steps up (e.g., C to B)</span>
+    </div>
+    <div class="interval-row">
+      <span class="interval-name">Octave</span>
+      <span class="interval-semitone">12 semitones</span>
+      <span class="interval-description">Twelve half steps up (e.g., C to C)</span>
+    </div>
+  </div>
+  <script>
+    const notes = ['E', 'A', 'D', 'G', 'B', 'E'];
+    const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const stringOffsets = [4, 9, 2, 7, 11, 4]; // 1=E, 2=A, 3=D, 4=G, 5=B, 6=E
+    const fretboard = document.getElementById('fretboard');
+    const taskDisplay = document.getElementById('task');
+    const feedback = document.getElementById('feedback');
+    const stringSelect = document.getElementById('string-select');
+    const noteTypeSelect = document.getElementById('note-type-select');
+    let target = {};
+const modeSelect = document.getElementById('mode-select');
+const noteControls = document.getElementById('note-controls');
+const showNotesToggle = document.getElementById('show-notes-toggle');
+const intervalCheatsheet = document.getElementById('interval-cheatsheet');
+
+    function noteAt(stringIndex, fret) {
+      const base = stringOffsets[stringIndex];
+      return noteMap[(base + fret) % 12];
+    }
+
+    function isNoteValid(note) {
+      const type = noteTypeSelect.value;
+      const isNatural = !note.includes('#');
+      if (type === 'all') return true;
+      if (type === 'natural') return isNatural;
+      if (type === 'accidental') return !isNatural;
+      return true;
+    }
+
+    function renderFretboard() {
+      fretboard.innerHTML = '';
+      feedback.textContent = '';
+      const width = fretboard.clientWidth;
+      const height = fretboard.clientHeight;
+      const fretCount = 13;
+      const selectedString = stringSelect.value;
+      const mode = modeSelect.value;
+      const showNotes = showNotesToggle.checked;
+
+      for (let string = 0; string < 6; string++) {
+        const y = ((6 - string) / 7) * height;
+        const div = document.createElement('div');
+        div.classList.add('string-hitbox');
+        div.style.top = `${y}px`;
+        div.dataset.string = string;
+        if (selectedString !== 'all' && string === parseInt(selectedString) - 1) {
+          div.classList.add('glow');
+        }
+        div.addEventListener('click', handleClick);
+
+        const line = document.createElement('div');
+        line.classList.add('string-line');
+        div.appendChild(line);
+
+        fretboard.appendChild(div);
+      }
+
+      const dotFrets = [3, 5, 7, 9, 12];
+      for (let fret = 0; fret < fretCount; fret++) {
+        const x = (fret / (fretCount - 1)) * width;
+
+        const line = document.createElement('div');
+        line.classList.add('fret-line');
+        line.style.left = `${x}px`;
+        fretboard.appendChild(line);
+
+        const label = document.createElement('div');
+        label.classList.add('fret-label');
+        label.style.left = `${x}px`;
+        label.textContent = fret;
+        fretboard.appendChild(label);
+
+        if (dotFrets.includes(fret)) {
+          const dot = document.createElement('div');
+          dot.classList.add('dot-marker');
+          dot.style.left = `${x - (width / (fretCount - 1)) / 2}px`;
+          dot.style.top = `${fret === 12 ? height / 2 - 30 : height / 2}px`;
+          fretboard.appendChild(dot);
+
+          if (fret === 12) {
+            const dot2 = dot.cloneNode();
+            dot2.style.top = `${height / 2 + 30}px`;
+            fretboard.appendChild(dot2);
+          }
+        }
+      }
+
+      // Add note labels if toggle is enabled
+      if (showNotes) {
+        for (let string = 0; string < 6; string++) {
+          for (let fret = 0; fret <= 12; fret++) {
+            const note = noteAt(string, fret);
+            const x = (fret / (fretCount - 1)) * width;
+            const y = ((6 - string) / 7) * height;
+
+            const noteLabel = document.createElement('div');
+            noteLabel.classList.add('note-label');
+            noteLabel.classList.add(note.includes('#') ? 'accidental' : 'natural');
+            // Position notes in the gap before the fret (between previous fret and current fret)
+            noteLabel.style.left = `${x - (width / (fretCount - 1)) / 2}px`;
+            noteLabel.style.top = `${y}px`;
+            noteLabel.textContent = note;
+            fretboard.appendChild(noteLabel);
+          }
+        }
+      }
+    }
+
+    function updateCheatsheetVisibility() {
+      const mode = modeSelect.value;
+      if (mode === 'interval') {
+        intervalCheatsheet.style.display = 'block';
+      } else {
+        intervalCheatsheet.style.display = 'none';
+      }
+    }
+
+    function ordinal(n) {
+      if (n === 1) return "1st";
+      if (n === 2) return "2nd";
+      if (n === 3) return "3rd";
+      return `${n}th`;
+    }
+
+    function newTask() {
+      const mode = modeSelect.value;
+      if (mode === 'interval') {
+        noteControls.style.display = 'none';
+        const intervals = [
+          { name: 'minor 2nd', semitones: 1 },
+          { name: 'major 2nd', semitones: 2 },
+          { name: 'minor 3rd', semitones: 3 },
+          { name: 'major 3rd', semitones: 4 },
+          { name: 'perfect 4th', semitones: 5 },
+          { name: 'tritone', semitones: 6 },
+          { name: 'perfect 5th', semitones: 7 },
+          { name: 'minor 6th', semitones: 8 },
+          { name: 'major 6th', semitones: 9 },
+          { name: 'minor 7th', semitones: 10 },
+          { name: 'major 7th', semitones: 11 },
+          { name: 'octave', semitones: 12 }
+        ];
+        const rootNote = noteMap[Math.floor(Math.random() * 12)];
+        const interval = intervals[Math.floor(Math.random() * intervals.length)];
+        target = {
+          mode: 'interval',
+          root: rootNote,
+          semitones: interval.semitones,
+          intervalName: interval.name
+        };
+        taskDisplay.textContent = `Find the ${interval.name} from ${rootNote}`;
+        return;
+      } else {
+        noteControls.style.display = 'inline';
+      }
+
+      let string;
+      const selected = stringSelect.value;
+      if (selected === 'all') {
+        string = Math.floor(Math.random() * 6);
+      } else {
+        string = parseInt(selected) - 1;
+      }
+
+      let note, fret;
+      do {
+        fret = Math.floor(Math.random() * 12) + 1;
+        note = noteAt(string, fret);
+      } while (!isNoteValid(note));
+
+      target = { string, fret, note };
+      const displayString = ordinal(string + 1);
+      taskDisplay.textContent = `Click on the ${note} note on the ${displayString} string.`;
+    }
+
+    function handleClick(e) {
+      const mode = modeSelect.value;
+      const visualIndex = parseInt(e.currentTarget.dataset.string);
+      const clickedString = visualIndex;
+      const selected = stringSelect.value;
+
+      const x = event.offsetX;
+      const width = fretboard.clientWidth;
+      const fret = Math.floor((x / (width / 12))) + 1;
+      const note = noteAt(clickedString, fret);
+
+      const y = ((6 - visualIndex) / 7) * fretboard.clientHeight;
+      const marker = document.createElement('div');
+      marker.classList.add('marker');
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+
+      if (mode === 'interval') {
+        const expectedNote = noteMap[(noteMap.indexOf(target.root) + target.semitones) % 12];
+        if (note === expectedNote) {
+          marker.classList.add('correct');
+          feedback.textContent = "✅ Correct, you truly are a guitar legend, don't listen to what they say";
+        } else {
+          marker.classList.add('incorrect');
+          feedback.innerHTML = `❌ Unlucky mate, keep trying, you'll be a guitar legend in no time.<br><small>You clicked ${note}. Expected ${expectedNote}.</small>`;
+
+          for (let s = 0; s < 6; s++) {
+            for (let f = 0; f <= 12; f++) {
+              if (noteAt(s, f) === expectedNote && f > 0) {
+                const hintX = (f - 1 + 0.5) * (width / 12);
+                const hintY = ((6 - s) / 7) * fretboard.clientHeight;
+                const hint = document.createElement('div');
+                hint.classList.add('marker', 'hint');
+                hint.style.left = `${hintX}px`;
+                hint.style.top = `${hintY}px`;
+                fretboard.appendChild(hint);
+              }
+            }
+          }
+        }
+        fretboard.appendChild(marker);
+        setTimeout(() => {
+          renderFretboard();
+          newTask();
+        }, 3000);
+        return;
+      }
+      marker.classList.add('marker');
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+
+      if (note === target.note && clickedString === target.string) {
+        marker.classList.add('correct');
+        feedback.textContent = "✅ Correct, you truly are a guitar legend, don't listen to what they say";
+      } else {
+        const expectedString = target.string;
+        const expectedFret = target.fret;
+        const expectedNote = target.note;
+        const expectedStringLabel = ordinal(expectedString + 1);
+        const actualStringLabel = ordinal(clickedString + 1);
+        marker.classList.add('incorrect');
+        feedback.innerHTML = `❌ Unlucky mate, keep trying, you'll be a guitar legend in no time.<br><small>You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</small>`;
+
+        const expectedX = (expectedFret - 1 + 0.5) * (width / 12);
+        const expectedY = ((6 - expectedString) / 7) * fretboard.clientHeight;
+        const hint = document.createElement('div');
+        hint.classList.add('marker', 'hint');
+        hint.style.left = `${expectedX}px`;
+        hint.style.top = `${expectedY}px`;
+        fretboard.appendChild(hint);
+      }
+
+      fretboard.appendChild(marker);
+
+      setTimeout(() => {
+        renderFretboard();
+        newTask();
+      }, 3000);
+    }
+
+    document.getElementById('new-task').addEventListener('click', newTask);
+modeSelect.addEventListener('change', () => {
+  renderFretboard();
+  newTask();
+  updateCheatsheetVisibility();
+});
+    stringSelect.addEventListener('change', () => {
+      renderFretboard();
+      newTask();
+    });
+    noteTypeSelect.addEventListener('change', () => {
+      renderFretboard();
+      newTask();
+    });
+    showNotesToggle.addEventListener('change', () => {
+      renderFretboard();
+    });
+
+    renderFretboard();
+    newTask();
+    updateCheatsheetVisibility();
+  </script>
+</body>
+</html>
+
