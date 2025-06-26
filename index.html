@@ -246,8 +246,10 @@
       text-align: center;
       min-height: 50px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
       border: 1px solid #444;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
@@ -262,7 +264,7 @@
       border: 2px solid #444;
       border-radius: 12px;
       padding: 20px 25px;
-      margin: 30px auto;
+      margin: 30px auto 50px auto;
       max-width: 650px;
       font-size: 1.3em;
       font-weight: 600;
@@ -453,8 +455,9 @@
       <button id="new-task"></button>
     </div>
   </div>
-  <div id="feedback"></div>
   <div id="fretboard"></div>
+  <div id="feedback"></div>
+  <span class="task-label">Helpful Resources</span>
   <div id="interval-cheatsheet">
     <h3>Interval Reference Guide</h3>
     <div class="interval-row">
@@ -562,7 +565,7 @@
         div.classList.add('string-hitbox');
         div.style.top = `${y}px`;
         div.dataset.string = string;
-        if (selectedString !== 'all' && string === parseInt(selectedString) - 1) {
+        if (selectedString !== 'all' && string === parseInt(selectedString) - 1 && modeSelect.value !== 'interval') {
           div.classList.add('glow');
         }
         div.addEventListener('click', handleClick);
@@ -720,10 +723,10 @@
         const expectedNote = noteMap[(noteMap.indexOf(target.root) + target.semitones) % 12];
         if (note === expectedNote) {
           marker.classList.add('correct');
-          feedback.textContent = "✅ Correct, you truly are a guitar legend, don't listen to what they say";
+          feedback.innerHTML = `<div>✅ Yeh boy!</div><div style="font-size: 14px; color: #aaa;">You found ${note} correctly!</div>`;
         } else {
           marker.classList.add('incorrect');
-          feedback.innerHTML = `❌ Unlucky mate, keep trying, you'll be a guitar legend in no time.<br><small>You clicked ${note}. Expected ${expectedNote}.</small>`;
+          feedback.innerHTML = `<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note}. Expected ${expectedNote}.</div>`;
 
           for (let s = 0; s < 6; s++) {
             for (let f = 0; f <= 12; f++) {
@@ -752,7 +755,7 @@
 
       if (note === target.note && clickedString === target.string) {
         marker.classList.add('correct');
-        feedback.textContent = "✅ Correct, you truly are a guitar legend, don't listen to what they say";
+        feedback.innerHTML = `<div>✅ Yeh boy!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string!</div>`;
       } else {
         const expectedString = target.string;
         const expectedFret = target.fret;
@@ -760,7 +763,7 @@
         const expectedStringLabel = ordinal(expectedString + 1);
         const actualStringLabel = ordinal(clickedString + 1);
         marker.classList.add('incorrect');
-        feedback.innerHTML = `❌ Unlucky mate, keep trying, you'll be a guitar legend in no time.<br><small>You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</small>`;
+        feedback.innerHTML = `<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</div>`;
 
         const expectedX = (expectedFret - 1 + 0.5) * (width / 12);
         const expectedY = ((expectedString + 1) / 7) * fretboard.clientHeight;
@@ -781,6 +784,9 @@
 
     document.getElementById('new-task').addEventListener('click', newTask);
     modeSelect.addEventListener('change', () => {
+      if (modeSelect.value === 'interval') {
+        stringSelect.value = 'all';
+      }
       renderFretboard();
       newTask();
       updateCheatsheetVisibility();
