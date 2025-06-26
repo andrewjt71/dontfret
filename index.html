@@ -455,7 +455,7 @@
       const showNotes = showNotesToggle.checked;
 
       for (let string = 0; string < 6; string++) {
-        const y = ((6 - string) / 7) * height;
+        const y = ((string + 1) / 7) * height;
         const div = document.createElement('div');
         div.classList.add('string-hitbox');
         div.style.top = `${y}px`;
@@ -508,7 +508,7 @@
           for (let fret = 0; fret <= 12; fret++) {
             const note = noteAt(string, fret);
             const x = (fret / (fretCount - 1)) * width;
-            const y = ((6 - string) / 7) * height;
+            const y = ((string + 1) / 7) * height;
 
             const noteLabel = document.createElement('div');
             noteLabel.classList.add('note-label');
@@ -608,7 +608,7 @@
       const fret = Math.floor((x / (width / 12))) + 1;
       const note = noteAt(clickedString, fret);
 
-      const y = ((6 - visualIndex) / 7) * fretboard.clientHeight;
+      const y = ((clickedString + 1) / 7) * fretboard.clientHeight;
       const marker = document.createElement('div');
       marker.classList.add('marker');
       marker.style.left = `${x}px`;
@@ -627,7 +627,7 @@
             for (let f = 0; f <= 12; f++) {
               if (noteAt(s, f) === expectedNote && f > 0) {
                 const hintX = (f - 1 + 0.5) * (width / 12);
-                const hintY = ((6 - s) / 7) * fretboard.clientHeight;
+                const hintY = ((s + 1) / 7) * fretboard.clientHeight;
                 const hint = document.createElement('div');
                 hint.classList.add('marker', 'hint');
                 hint.style.left = `${hintX}px`;
@@ -661,7 +661,7 @@
         feedback.innerHTML = `❌ Unlucky mate, keep trying, you'll be a guitar legend in no time.<br><small>You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</small>`;
 
         const expectedX = (expectedFret - 1 + 0.5) * (width / 12);
-        const expectedY = ((6 - expectedString) / 7) * fretboard.clientHeight;
+        const expectedY = ((expectedString + 1) / 7) * fretboard.clientHeight;
         const hint = document.createElement('div');
         hint.classList.add('marker', 'hint');
         hint.style.left = `${expectedX}px`;
