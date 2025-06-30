@@ -383,6 +383,40 @@ button:hover {
     padding: 15px 20px;
     margin: 20px 10px;
   }
+  .interval-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+    background: rgba(30,30,30,0.7);
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+  .interval-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  .interval-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #ffcc00;
+    margin-bottom: 2px;
+    min-width: 0;
+  }
+  .interval-semitone {
+    color: #ccc;
+    font-size: 1em;
+    margin-bottom: 2px;
+    min-width: 0;
+  }
+  .interval-description {
+    color: #aaa;
+    font-size: 0.98em;
+    margin-left: 0;
+    margin-bottom: 0;
+    flex: unset;
+  }
 }
 @media (max-width: 400px) {
   .control-group {

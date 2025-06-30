@@ -1,6 +1,6 @@
-const notes = ['E', 'A', 'D', 'G', 'B', 'E'];
+const notes = ['E', 'B', 'G', 'D', 'A', 'E'];
 const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const stringOffsets = [4, 9, 2, 7, 11, 4]; // 1=E, 2=A, 3=D, 4=G, 5=B, 6=E
+const stringOffsets = [4, 11, 7, 2, 9, 4]; // 1=high E, 2=B, 3=G, 4=D, 5=A, 6=low E
 const fretboard = document.getElementById('fretboard');
 const taskDisplay = document.getElementById('task-text');
 const feedback = document.getElementById('feedback');
