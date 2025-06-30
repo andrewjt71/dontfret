@@ -745,6 +745,61 @@
       line-height: 1.6;
     }
 
+    .support-link {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .love-message {
+      color: #888;
+      font-size: 14px;
+      margin: 0 0 10px 0;
+      font-style: italic;
+    }
+
+    .coffee-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .coffee-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .footer {
+      margin-top: 60px;
+      padding: 30px 20px;
+      text-align: center;
+      border-top: 1px solid #333;
+    }
+
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .footer-content p {
+      color: #888;
+      font-size: 14px;
+      margin: 0;
+    }
+
     .seo-section {
       background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
       border: 2px solid #444;
@@ -854,6 +909,12 @@
     <header>
       <h1>Don't Fret It - Free Guitar Learning Tool</h1>
       <p class="subtitle">Master guitar theory with our interactive fretboard trainer. Practice note recognition, chord construction, and interval training.</p>
+      <div class="support-link">
+        <p class="love-message">Made with ❤️ for guitarists everywhere</p>
+        <a href="https://coff.ee/andrewjt71" target="_blank" rel="noopener noreferrer" class="coffee-link">
+          ☕ Support this project
+        </a>
+      </div>
     </header>
 
     <section id="app-container">
@@ -1642,4 +1703,3 @@
   </script>
 </body>
 </html>
-
