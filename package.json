@@ -1,0 +1,32 @@
+{
+  "name": "dont-fret-it",
+  "version": "1.0.0",
+  "description": "Free guitar learning tool for mastering fretboard notes, intervals, and chords",
+  "main": "index.html",
+  "scripts": {
+    "build": "npm run minify-css && npm run minify-js",
+    "minify-css": "npx cleancss -o styles.min.css styles.css",
+    "minify-js": "npx terser script.js -o script.min.js --compress --mangle",
+    "dev": "npm run build && echo 'Development build complete. Open index.html in your browser.'"
+  },
+  "keywords": [
+    "guitar",
+    "music-theory",
+    "fretboard",
+    "learning-tool",
+    "interactive",
+    "chords",
+    "intervals",
+    "notes"
+  ],
+  "author": "Don't Fret It",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/dontfret.git"
+  },
+  "devDependencies": {
+    "terser": "^5.30.3",
+    "clean-css-cli": "^5.7.3"
+  }
+}
