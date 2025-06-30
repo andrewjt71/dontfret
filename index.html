@@ -450,16 +450,6 @@
       animation: screenFlash 0.3s ease-in-out;
     }
 
-    .marker.correct {
-      box-shadow: 0 0 20px 5px rgba(76, 175, 80, 0.8);
-      animation: markerPop 0.4s ease-out;
-    }
-
-    .marker.incorrect {
-      box-shadow: 0 0 20px 5px rgba(244, 67, 54, 0.8);
-      animation: markerPop 0.4s ease-out;
-    }
-
     .particle {
       position: fixed;
       pointer-events: none;
@@ -941,7 +931,7 @@
         const expectedNote = noteMap[(noteMap.indexOf(target.root) + target.semitones) % 12];
         if (note === expectedNote) {
           marker.classList.add('correct');
-          feedback.innerHTML = `<div>✅ Yeh boy!</div><div style="font-size: 14px; color: #aaa;">You found ${note} correctly!</div>`;
+          feedback.innerHTML = `<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} correctly!</div>`;
           feedback.classList.add('feedback-correct');
           createParticles(e.clientX, e.clientY, true);
         } else {
@@ -1030,7 +1020,7 @@
 
       if (note === target.note && clickedString === target.string) {
         marker.classList.add('correct');
-        feedback.innerHTML = `<div>✅ Yeh boy!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string!</div>`;
+        feedback.innerHTML = `<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string!</div>`;
         feedback.classList.add('feedback-correct');
         createParticles(e.clientX, e.clientY, true);
       } else {
