@@ -44,6 +44,8 @@ function isNoteValid(note) {
 
 // Track clicked positions for chord training
 let clickedPositions = [];
+// Track incorrect positions for chord training
+let incorrectPositions = [];
 
 function renderFretboard() {
   fretboard.innerHTML = '';
@@ -111,6 +113,18 @@ function renderFretboard() {
       const y = ((pos.string + 1) / 7) * height;
       const marker = document.createElement('div');
       marker.classList.add('marker', 'correct');
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      fretboard.appendChild(marker);
+    });
+  }
+  // Show previously selected incorrect notes in chord training mode
+  if (mode === 'chord' && incorrectPositions.length > 0) {
+    incorrectPositions.forEach(pos => {
+      const x = (pos.fret - 1 + 0.5) * (width / 12);
+      const y = ((pos.string + 1) / 7) * height;
+      const marker = document.createElement('div');
+      marker.classList.add('marker', 'incorrect');
       marker.style.left = `${x}px`;
       marker.style.top = `${y}px`;
       fretboard.appendChild(marker);
@@ -194,6 +208,7 @@ function newTask() {
 
     // Clear clicked positions for new task
     clickedPositions = [];
+    incorrectPositions = [];
 
     target = {
       mode: 'chord',
@@ -256,42 +271,26 @@ function handleClick(e) {
     const expectedNote = noteMap[(noteMap.indexOf(target.root) + target.semitones) % 12];
     if (note === expectedNote) {
       marker.classList.add('correct');
-      feedback.innerHTML = `<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} correctly!</div>`;
-      feedback.classList.add('feedback-correct');
+      showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} correctly!</div>`, 'feedback-correct');
       createParticles(e.clientX, e.clientY, true);
+      fretboard.appendChild(marker);
+      setTimeout(() => {
+        renderFretboard();
+        newTask();
+      }, 2000);
     } else {
       marker.classList.add('incorrect');
-      feedback.innerHTML = `<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note}. Expected ${expectedNote}.</div>`;
-      feedback.classList.add('feedback-incorrect');
+      showFeedback(`<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note}. Expected ${expectedNote}.</div>`, 'feedback-incorrect');
       createParticles(e.clientX, e.clientY, false);
-
-      for (let s = 0; s < 6; s++) {
-        for (let f = 0; f <= 12; f++) {
-          if (noteAt(s, f) === expectedNote && f > 0) {
-            const hintX = (f - 1 + 0.5) * (width / 12);
-            const hintY = ((s + 1) / 7) * fretboard.clientHeight;
-            const hint = document.createElement('div');
-            hint.classList.add('marker', 'hint');
-            hint.style.left = `${hintX}px`;
-            hint.style.top = `${hintY}px`;
-            fretboard.appendChild(hint);
-          }
-        }
-      }
+      fretboard.appendChild(marker);
     }
-    fretboard.appendChild(marker);
-    setTimeout(() => {
-      renderFretboard();
-      newTask();
-    }, 5000);
     return;
   } else if (mode === 'chord') {
     if (target.chordNotes.includes(note)) {
       if (target.selectedNotes.includes(note)) {
         // Note already selected
         marker.classList.add('incorrect');
-        feedback.innerHTML = `<div>❌ Already found!</div><div style="font-size: 14px; color: #aaa;">You already found ${note}. Find the remaining notes: ${target.chordNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`;
-        feedback.classList.add('feedback-incorrect');
+        showFeedback(`<div>❌ Already found!</div><div style="font-size: 14px; color: #aaa;">You already found ${note}. Find the remaining notes: ${target.chordNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`, 'feedback-incorrect');
         createParticles(e.clientX, e.clientY, false);
       } else {
         // Correct note, add to selected
@@ -302,40 +301,35 @@ function handleClick(e) {
 
         if (target.selectedNotes.length === target.chordNotes.length) {
           // Chord complete!
-          feedback.innerHTML = `<div>✅ Chord Complete!</div><div style="font-size: 14px; color: #aaa;">You found all notes in ${target.root} ${target.chordType} chord!</div>`;
-          feedback.classList.add('feedback-correct');
+          showFeedback(`<div>✅ Chord Complete!</div><div style="font-size: 14px; color: #aaa;">You found all notes in ${target.root} ${target.chordType} chord!</div>`, 'feedback-correct');
           createParticles(e.clientX, e.clientY, true);
           target.completed = true;
-          // Clear selected notes and clicked positions for next task
-          target.selectedNotes = [];
-          clickedPositions = [];
+          setTimeout(() => {
+            // Clear selected notes and clicked positions for next task
+            target.selectedNotes = [];
+            clickedPositions = [];
+            incorrectPositions = [];
+            renderFretboard();
+            newTask();
+          }, 2000);
         } else {
           // Still more notes to find - don't show remaining notes
-          feedback.innerHTML = `<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">Found ${note}.</div>`;
-          feedback.classList.add('feedback-correct');
+          showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">Found ${note}.</div>`, 'feedback-correct');
           createParticles(e.clientX, e.clientY, true);
         }
       }
     } else {
       // Wrong note
       marker.classList.add('incorrect');
-      feedback.innerHTML = `<div>❌ Not in chord!</div><div style="font-size: 14px; color: #aaa;">${note} is not in ${target.root} ${target.chordType} chord. Need: ${target.chordNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`;
-      feedback.classList.add('feedback-incorrect');
+      showFeedback(`<div>❌ Not in chord!</div><div style="font-size: 14px; color: #aaa;">${note} is not in ${target.root} ${target.chordType} chord. Need: ${target.chordNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`, 'feedback-incorrect');
       createParticles(e.clientX, e.clientY, false);
+      // Track the specific incorrect position clicked
+      incorrectPositions.push({ string: clickedString, fret: fret });
     }
 
     fretboard.appendChild(marker);
 
-    if (target.completed) {
-      setTimeout(() => {
-        renderFretboard();
-        newTask();
-      }, 5000);
-    } else {
-      setTimeout(() => {
-        renderFretboard();
-      }, 4000);
-    }
+    // Only redraw and clear feedback when the chord is completed (handled above)
     return;
   }
 
@@ -345,9 +339,13 @@ function handleClick(e) {
 
   if (note === target.note && clickedString === target.string) {
     marker.classList.add('correct');
-    feedback.innerHTML = `<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string!</div>`;
-    feedback.classList.add('feedback-correct');
+    showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string!</div>`, 'feedback-correct');
     createParticles(e.clientX, e.clientY, true);
+    fretboard.appendChild(marker);
+    setTimeout(() => {
+      renderFretboard();
+      newTask();
+    }, 2000);
   } else {
     const expectedString = target.string;
     const expectedFret = target.fret;
@@ -355,35 +353,25 @@ function handleClick(e) {
     const expectedStringLabel = ordinal(expectedString + 1);
     const actualStringLabel = ordinal(clickedString + 1);
     marker.classList.add('incorrect');
-    feedback.innerHTML = `<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</div>`;
-    feedback.classList.add('feedback-incorrect');
+    showFeedback(`<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</div>`, 'feedback-incorrect');
     createParticles(e.clientX, e.clientY, false);
-
-    const expectedX = (expectedFret - 1 + 0.5) * (width / 12);
-    const expectedY = ((expectedString + 1) / 7) * fretboard.clientHeight;
-    const hint = document.createElement('div');
-    hint.classList.add('marker', 'hint');
-    hint.style.left = `${expectedX}px`;
-    hint.style.top = `${expectedY}px`;
-    fretboard.appendChild(hint);
+    fretboard.appendChild(marker);
   }
-
-  fretboard.appendChild(marker);
-
-  setTimeout(() => {
-    renderFretboard();
-    newTask();
-  }, 5000);
 }
 
 document.getElementById('new-task').addEventListener('click', () => {
   // Clear chord training state when manually refreshing
   if (modeSelect.value === 'chord') {
     clickedPositions = [];
+    incorrectPositions = [];
     if (target && target.selectedNotes) {
       target.selectedNotes = [];
     }
   }
+  // Clear feedback and redraw fretboard
+  feedback.textContent = '';
+  feedback.classList.remove('feedback-correct', 'feedback-incorrect');
+  renderFretboard();
   newTask();
 });
 
@@ -665,3 +653,11 @@ function handleScroll() {
 
 // Add scroll event listener
 window.addEventListener('scroll', handleScroll);
+
+function showFeedback(html, className) {
+  feedback.textContent = '';
+  feedback.classList.remove('feedback-correct', 'feedback-incorrect');
+  void feedback.offsetWidth; // force reflow for animation
+  feedback.innerHTML = html;
+  feedback.classList.add(className);
+}
