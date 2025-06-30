@@ -622,6 +622,7 @@
           <select id="mode-select">
             <option value="note">Note Training</option>
             <option value="interval">Interval Training</option>
+            <option value="chord">Chord Training</option>
           </select>
         </div>
       </div>
@@ -695,6 +696,23 @@
     const showNotesToggle = document.getElementById('show-notes-toggle');
     const intervalCheatsheet = document.getElementById('interval-cheatsheet');
 
+    // Chord definitions
+    const chords = {
+      'major': [0, 4, 7], // root, major 3rd, perfect 5th
+      'minor': [0, 3, 7], // root, minor 3rd, perfect 5th
+      'diminished': [0, 3, 6], // root, minor 3rd, diminished 5th
+      'augmented': [0, 4, 8], // root, major 3rd, augmented 5th
+      'major7': [0, 4, 7, 11], // root, major 3rd, perfect 5th, major 7th
+      'minor7': [0, 3, 7, 10], // root, minor 3rd, perfect 5th, minor 7th
+      'dominant7': [0, 4, 7, 10], // root, major 3rd, perfect 5th, minor 7th
+      'diminished7': [0, 3, 6, 9], // root, minor 3rd, diminished 5th, diminished 7th
+    };
+
+    function getChordNotes(rootNote, chordType) {
+      const rootIndex = noteMap.indexOf(rootNote);
+      return chords[chordType].map(interval => noteMap[(rootIndex + interval) % 12]);
+    }
+
     function noteAt(stringIndex, fret) {
       const base = stringOffsets[stringIndex];
       return noteMap[(base + fret) % 12];
@@ -708,6 +726,9 @@
       if (type === 'accidental') return !isNatural;
       return true;
     }
+
+    // Track clicked positions for chord training
+    let clickedPositions = [];
 
     function renderFretboard() {
       fretboard.innerHTML = '';
@@ -768,6 +789,19 @@
         }
       }
 
+      // Show previously selected correct notes in chord training mode
+      if (mode === 'chord' && clickedPositions.length > 0) {
+        clickedPositions.forEach(pos => {
+          const x = (pos.fret - 1 + 0.5) * (width / 12);
+          const y = ((pos.string + 1) / 7) * height;
+          const marker = document.createElement('div');
+          marker.classList.add('marker', 'correct');
+          marker.style.left = `${x}px`;
+          marker.style.top = `${y}px`;
+          fretboard.appendChild(marker);
+        });
+      }
+
       // Add note labels if toggle is enabled
       if (showNotes) {
         for (let string = 0; string < 6; string++) {
@@ -794,7 +828,7 @@
       const stringSelect = document.getElementById('string-select').parentElement.parentElement;
       const noteTypeSelect = document.getElementById('note-type-select').parentElement.parentElement;
 
-      if (mode === 'interval') {
+      if (mode === 'interval' || mode === 'chord') {
         stringSelect.style.display = 'none';
         noteTypeSelect.style.display = 'none';
       } else {
@@ -836,6 +870,34 @@
           intervalName: interval.name
         };
         taskDisplay.textContent = `Find the ${interval.name} from ${rootNote}`;
+        return;
+      } else if (mode === 'chord') {
+        const chordTypes = Object.keys(chords);
+        const chordType = chordTypes[Math.floor(Math.random() * chordTypes.length)];
+        const rootNote = noteMap[Math.floor(Math.random() * 12)];
+        const chordNotes = getChordNotes(rootNote, chordType);
+
+        // Clear clicked positions for new task
+        clickedPositions = [];
+
+        target = {
+          mode: 'chord',
+          root: rootNote,
+          chordType: chordType,
+          chordNotes: chordNotes,
+          selectedNotes: [],
+          completed: false
+        };
+
+        const chordName = chordType === 'major' ? 'major' :
+                         chordType === 'minor' ? 'minor' :
+                         chordType === 'diminished' ? 'diminished' :
+                         chordType === 'augmented' ? 'augmented' :
+                         chordType === 'major7' ? 'major 7th' :
+                         chordType === 'minor7' ? 'minor 7th' :
+                         chordType === 'dominant7' ? 'dominant 7th' : 'diminished 7th';
+
+        taskDisplay.textContent = `Find all the notes in ${rootNote} ${chordName} chord`;
         return;
       }
 
@@ -908,7 +970,60 @@
           newTask();
         }, 3000);
         return;
+      } else if (mode === 'chord') {
+        if (target.chordNotes.includes(note)) {
+          if (target.selectedNotes.includes(note)) {
+            // Note already selected
+            marker.classList.add('incorrect');
+            feedback.innerHTML = `<div>❌ Already found!</div><div style="font-size: 14px; color: #aaa;">You already found ${note}. Find the remaining notes: ${target.chordNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`;
+            feedback.classList.add('feedback-incorrect');
+            createParticles(e.clientX, e.clientY, false);
+          } else {
+            // Correct note, add to selected
+            target.selectedNotes.push(note);
+            // Track the specific position clicked
+            clickedPositions.push({ string: clickedString, fret: fret });
+            marker.classList.add('correct');
+
+            if (target.selectedNotes.length === target.chordNotes.length) {
+              // Chord complete!
+              feedback.innerHTML = `<div>✅ Chord Complete!</div><div style="font-size: 14px; color: #aaa;">You found all notes in ${target.root} ${target.chordType} chord!</div>`;
+              feedback.classList.add('feedback-correct');
+              createParticles(e.clientX, e.clientY, true);
+              target.completed = true;
+              // Clear selected notes and clicked positions for next task
+              target.selectedNotes = [];
+              clickedPositions = [];
+            } else {
+              // Still more notes to find - don't show remaining notes
+              feedback.innerHTML = `<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">Found ${note}.</div>`;
+              feedback.classList.add('feedback-correct');
+              createParticles(e.clientX, e.clientY, true);
+            }
+          }
+        } else {
+          // Wrong note
+          marker.classList.add('incorrect');
+          feedback.innerHTML = `<div>❌ Not in chord!</div><div style="font-size: 14px; color: #aaa;">${note} is not in ${target.root} ${target.chordType} chord. Need: ${target.chordNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`;
+          feedback.classList.add('feedback-incorrect');
+          createParticles(e.clientX, e.clientY, false);
+        }
+
+        fretboard.appendChild(marker);
+
+        if (target.completed) {
+          setTimeout(() => {
+            renderFretboard();
+            newTask();
+          }, 3000);
+        } else {
+          setTimeout(() => {
+            renderFretboard();
+          }, 2000);
+        }
+        return;
       }
+
       marker.classList.add('marker');
       marker.style.left = `${x}px`;
       marker.style.top = `${y}px`;
@@ -946,7 +1061,16 @@
       }, 3000);
     }
 
-    document.getElementById('new-task').addEventListener('click', newTask);
+    document.getElementById('new-task').addEventListener('click', () => {
+      // Clear chord training state when manually refreshing
+      if (modeSelect.value === 'chord') {
+        clickedPositions = [];
+        if (target && target.selectedNotes) {
+          target.selectedNotes = [];
+        }
+      }
+      newTask();
+    });
     modeSelect.addEventListener('change', () => {
       if (modeSelect.value === 'interval') {
         stringSelect.value = 'all';
@@ -1067,6 +1191,59 @@
           </div>
         `;
         showModal(intervalContent);
+      } else if (mode === 'chord') {
+        const chordContent = `
+          <h3>Chord Training Guide</h3>
+          <div style="text-align: left; padding-left: 20px">
+            <p style="margin-bottom: 20px; line-height: 1.6;">Chord training helps you understand the building blocks of harmony. Each chord type has a specific formula:</p>
+          </div>
+
+          <div class="interval-row">
+            <span class="interval-name">Major</span>
+            <span class="interval-semitone">Root + M3 + P5</span>
+            <span class="interval-description">Root + Major 3rd + Perfect 5th (e.g., C major = C, E, G)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Minor</span>
+            <span class="interval-semitone">Root + m3 + P5</span>
+            <span class="interval-description">Root + Minor 3rd + Perfect 5th (e.g., C minor = C, D#, G)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Diminished</span>
+            <span class="interval-semitone">Root + m3 + d5</span>
+            <span class="interval-description">Root + Minor 3rd + Diminished 5th (e.g., C diminished = C, D#, F#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Augmented</span>
+            <span class="interval-semitone">Root + M3 + A5</span>
+            <span class="interval-description">Root + Major 3rd + Augmented 5th (e.g., C augmented = C, E, G#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Major 7th</span>
+            <span class="interval-semitone">Root + M3 + P5 + M7</span>
+            <span class="interval-description">Root + Major 3rd + Perfect 5th + Major 7th (e.g., C major 7 = C, E, G, B)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Minor 7th</span>
+            <span class="interval-semitone">Root + m3 + P5 + m7</span>
+            <span class="interval-description">Root + Minor 3rd + Perfect 5th + Minor 7th (e.g., C minor 7 = C, D#, G, A#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Dominant 7th</span>
+            <span class="interval-semitone">Root + M3 + P5 + m7</span>
+            <span class="interval-description">Root + Major 3rd + Perfect 5th + Minor 7th (e.g., C dominant 7 = C, E, G, A#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Diminished 7th</span>
+            <span class="interval-semitone">Root + m3 + d5 + d7</span>
+            <span class="interval-description">Root + Minor 3rd + Diminished 5th + Diminished 7th (e.g., C diminished 7 = C, D#, F#, A)</span>
+          </div>
+
+          <div style="text-align: left; padding-left: 20px; margin-top: 20px;">
+            <p style="line-height: 1.6;"><strong>Tip:</strong> Use the "Show Notes" toggle to help visualize the fretboard while learning!</p>
+          </div>
+        `;
+        showModal(chordContent);
       } else {
         const noteContent = `
           <h3>Note Training Tips</h3>
@@ -1137,6 +1314,9 @@
       if (mode === 'interval') {
         instructionsTitle.textContent = 'Interval Training';
         instructionsText.textContent = 'In guitar theory (and music theory in general), intervals are the building blocks of melody and harmony. An interval is the distance between two notes, measured in steps or semitones.';
+      } else if (mode === 'chord') {
+        instructionsTitle.textContent = 'Chord Training';
+        instructionsText.textContent = 'Learn to identify the notes that make up different chord types. Click on all the notes that belong to the given chord. You can select notes in any order, and the exercise is complete when you\'ve found all the required notes.';
       } else {
         instructionsTitle.textContent = 'Note Training';
         instructionsText.textContent = 'Knowing the notes of the guitar neck from memory is one of the most powerful things you can do as a guitarist. It unlocks fluency, creativity, and precision in virtually every area of your playing. Test your knowledge by  guessing the note on the fretboard.';
