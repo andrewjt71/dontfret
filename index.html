@@ -163,10 +163,12 @@
       transform: translate(-50%, -50%);
     }
     .marker.correct {
-      box-shadow: 0 0 10px 2px lightgreen;
+      box-shadow: 0 0 20px 5px rgba(76, 175, 80, 0.8);
+      animation: markerPop 0.4s ease-out;
     }
     .marker.incorrect {
-      box-shadow: 0 0 10px 2px lightcoral;
+      box-shadow: 0 0 20px 5px rgba(244, 67, 54, 0.8);
+      animation: markerPop 0.4s ease-out;
     }
     .marker.hint {
       box-shadow: 0 0 10px 2px lightgreen;
@@ -404,6 +406,175 @@
         width: 100%;
       }
     }
+    /* Animation keyframes */
+    @keyframes correctPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes incorrectShake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    @keyframes particleFloat {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) scale(0);
+        opacity: 0;
+      }
+    }
+
+    @keyframes markerPop {
+      0% { transform: translate(-50%, -50%) scale(0); }
+      50% { transform: translate(-50%, -50%) scale(1.2); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    /* Animation classes */
+    .feedback-correct {
+      animation: correctPulse 0.6s ease-in-out;
+      background: linear-gradient(135deg, #2d5a2d 0%, #1a3a1a 100%) !important;
+      border-color: #4CAF50 !important;
+    }
+
+    .feedback-incorrect {
+      animation: incorrectShake 0.5s ease-in-out;
+      background: linear-gradient(135deg, #5a2d2d 0%, #3a1a1a 100%) !important;
+      border-color: #f44336 !important;
+    }
+
+    .screen-flash {
+      animation: screenFlash 0.3s ease-in-out;
+    }
+
+    .marker.correct {
+      box-shadow: 0 0 20px 5px rgba(76, 175, 80, 0.8);
+      animation: markerPop 0.4s ease-out;
+    }
+
+    .marker.incorrect {
+      box-shadow: 0 0 20px 5px rgba(244, 67, 54, 0.8);
+      animation: markerPop 0.4s ease-out;
+    }
+
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      border-radius: 50%;
+      animation: particleFloat 1s ease-out forwards;
+      box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    /* Instructions and Modal Styles */
+    .instructions {
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 2px solid #444;
+      border-radius: 12px;
+      padding: 20px 25px;
+      margin: 20px auto 30px auto;
+      max-width: 650px;
+      color: #e0e0e0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .instructions h3 {
+      margin: 0 0 15px 0;
+      color: #f1f1f1;
+      font-size: 1.2em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .instructions p {
+      margin: 0 0 15px 0;
+      line-height: 1.6;
+      color: #ccc;
+    }
+
+    .info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #666;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 10px;
+    }
+
+    .info-icon:hover {
+      background: #888;
+      transform: scale(1.1);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 2px solid #444;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: #e0e0e0;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+    }
+
+    .modal-content h3 {
+      margin: 0 0 20px 0;
+      color: #f1f1f1;
+      font-size: 1.3em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
@@ -451,6 +622,11 @@
       </div>
     </div>
   </div>
+  <div id="instructions" class="instructions">
+    <h3 id="instructions-title">Note Training</h3>
+    <p id="instructions-text">Knowing the notes of the guitar neck from memory is one of the most powerful things you can do as a guitarist. It unlocks fluency, creativity, and precision in virtually every area of your playing.</p>
+    <span class="info-icon" id="info-icon">i</span>
+  </div>
   <div id="task-container">
     <span class="task-label">Current Task</span>
     <div id="task">
@@ -460,72 +636,15 @@
   </div>
   <div id="fretboard"></div>
   <div id="feedback"></div>
-  <div id="helpful-resources">
-    <span class="task-label">Helpful Resources</span>
-    <div id="interval-cheatsheet">
-      <h3>Interval Reference Guide</h3>
-      <div class="interval-row">
-        <span class="interval-name">Minor 2nd</span>
-        <span class="interval-semitone">1 semitone</span>
-        <span class="interval-description">Half step up (e.g., C to C#)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Major 2nd</span>
-        <span class="interval-semitone">2 semitones</span>
-        <span class="interval-description">Whole step up (e.g., C to D)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Minor 3rd</span>
-        <span class="interval-semitone">3 semitones</span>
-        <span class="interval-description">Three half steps up (e.g., C to D#)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Major 3rd</span>
-        <span class="interval-semitone">4 semitones</span>
-        <span class="interval-description">Four half steps up (e.g., C to E)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Perfect 4th</span>
-        <span class="interval-semitone">5 semitones</span>
-        <span class="interval-description">Five half steps up (e.g., C to F)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Tritone</span>
-        <span class="interval-semitone">6 semitones</span>
-        <span class="interval-description">Six half steps up (e.g., C to F#)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Perfect 5th</span>
-        <span class="interval-semitone">7 semitones</span>
-        <span class="interval-description">Seven half steps up (e.g., C to G)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Minor 6th</span>
-        <span class="interval-semitone">8 semitones</span>
-        <span class="interval-description">Eight half steps up (e.g., C to G#)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Major 6th</span>
-        <span class="interval-semitone">9 semitones</span>
-        <span class="interval-description">Nine half steps up (e.g., C to A)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Minor 7th</span>
-        <span class="interval-semitone">10 semitones</span>
-        <span class="interval-description">Ten half steps up (e.g., C to A#)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Major 7th</span>
-        <span class="interval-semitone">11 semitones</span>
-        <span class="interval-description">Eleven half steps up (e.g., C to B)</span>
-      </div>
-      <div class="interval-row">
-        <span class="interval-name">Octave</span>
-        <span class="interval-semitone">12 semitones</span>
-        <span class="interval-description">Twelve half steps up (e.g., C to C)</span>
-      </div>
+
+  <!-- Modal Overlay -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <div id="modal-content-inner"></div>
     </div>
   </div>
+
   <script>
     const notes = ['E', 'A', 'D', 'G', 'B', 'E'];
     const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -557,6 +676,7 @@
     function renderFretboard() {
       fretboard.innerHTML = '';
       feedback.textContent = '';
+      feedback.classList.remove('feedback-correct', 'feedback-incorrect');
       const width = fretboard.clientWidth;
       const height = fretboard.clientHeight;
       const fretCount = 13;
@@ -630,16 +750,6 @@
             fretboard.appendChild(noteLabel);
           }
         }
-      }
-    }
-
-    function updateHelpfulResourcesVisibility() {
-      const mode = modeSelect.value;
-      const helpfulResources = document.getElementById('helpful-resources');
-      if (mode === 'interval') {
-        helpfulResources.style.display = 'block';
-      } else {
-        helpfulResources.style.display = 'none';
       }
     }
 
@@ -730,9 +840,13 @@
         if (note === expectedNote) {
           marker.classList.add('correct');
           feedback.innerHTML = `<div>✅ Yeh boy!</div><div style="font-size: 14px; color: #aaa;">You found ${note} correctly!</div>`;
+          feedback.classList.add('feedback-correct');
+          createParticles(e.clientX, e.clientY, true);
         } else {
           marker.classList.add('incorrect');
           feedback.innerHTML = `<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note}. Expected ${expectedNote}.</div>`;
+          feedback.classList.add('feedback-incorrect');
+          createParticles(e.clientX, e.clientY, false);
 
           for (let s = 0; s < 6; s++) {
             for (let f = 0; f <= 12; f++) {
@@ -762,6 +876,8 @@
       if (note === target.note && clickedString === target.string) {
         marker.classList.add('correct');
         feedback.innerHTML = `<div>✅ Yeh boy!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string!</div>`;
+        feedback.classList.add('feedback-correct');
+        createParticles(e.clientX, e.clientY, true);
       } else {
         const expectedString = target.string;
         const expectedFret = target.fret;
@@ -770,6 +886,8 @@
         const actualStringLabel = ordinal(clickedString + 1);
         marker.classList.add('incorrect');
         feedback.innerHTML = `<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</div>`;
+        feedback.classList.add('feedback-incorrect');
+        createParticles(e.clientX, e.clientY, false);
 
         const expectedX = (expectedFret - 1 + 0.5) * (width / 12);
         const expectedY = ((expectedString + 1) / 7) * fretboard.clientHeight;
@@ -795,7 +913,7 @@
       }
       renderFretboard();
       newTask();
-      updateHelpfulResourcesVisibility();
+      updateInstructions();
       updateNoteControlsVisibility();
     });
     stringSelect.addEventListener('change', () => {
@@ -810,10 +928,161 @@
       renderFretboard();
     });
 
+    // Modal event listeners
+    document.getElementById('info-icon').addEventListener('click', () => {
+      const mode = modeSelect.value;
+      if (mode === 'interval') {
+        const intervalContent = `
+          <h3>Interval Reference Guide</h3>
+          <div class="interval-row">
+            <span class="interval-name">Minor 2nd</span>
+            <span class="interval-semitone">1 semitone</span>
+            <span class="interval-description">Half step up (e.g., C to C#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Major 2nd</span>
+            <span class="interval-semitone">2 semitones</span>
+            <span class="interval-description">Whole step up (e.g., C to D)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Minor 3rd</span>
+            <span class="interval-semitone">3 semitones</span>
+            <span class="interval-description">Three half steps up (e.g., C to D#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Major 3rd</span>
+            <span class="interval-semitone">4 semitones</span>
+            <span class="interval-description">Four half steps up (e.g., C to E)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Perfect 4th</span>
+            <span class="interval-semitone">5 semitones</span>
+            <span class="interval-description">Five half steps up (e.g., C to F)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Tritone</span>
+            <span class="interval-semitone">6 semitones</span>
+            <span class="interval-description">Six half steps up (e.g., C to F#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Perfect 5th</span>
+            <span class="interval-semitone">7 semitones</span>
+            <span class="interval-description">Seven half steps up (e.g., C to G)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Minor 6th</span>
+            <span class="interval-semitone">8 semitones</span>
+            <span class="interval-description">Eight half steps up (e.g., C to G#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Major 6th</span>
+            <span class="interval-semitone">9 semitones</span>
+            <span class="interval-description">Nine half steps up (e.g., C to A)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Minor 7th</span>
+            <span class="interval-semitone">10 semitones</span>
+            <span class="interval-description">Ten half steps up (e.g., C to A#)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Major 7th</span>
+            <span class="interval-semitone">11 semitones</span>
+            <span class="interval-description">Eleven half steps up (e.g., C to B)</span>
+          </div>
+          <div class="interval-row">
+            <span class="interval-name">Octave</span>
+            <span class="interval-semitone">12 semitones</span>
+            <span class="interval-description">Twelve half steps up (e.g., C to C)</span>
+          </div>
+        `;
+        showModal(intervalContent);
+      } else {
+        const noteContent = `
+          <h3>Note Training Tips</h3>
+          <p style="margin-bottom: 20px; line-height: 1.6;">Hint - limit the questions to a single string to focus your learning on one string at a time if you find learning the whole fretboard at the same time overwhelming.</p>
+        `;
+        showModal(noteContent);
+      }
+    });
+
+    document.getElementById('modal-close').addEventListener('click', hideModal);
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'modal-overlay') {
+        hideModal();
+      }
+    });
+
     renderFretboard();
     newTask();
-    updateHelpfulResourcesVisibility();
+    updateInstructions();
     updateNoteControlsVisibility();
+
+    function createParticles(x, y, isCorrect) {
+      const particleCount = 1;
+
+      const colors = isCorrect ?
+        ['#4CAF50'] :
+        ['#f44336'];
+
+      // Use the actual click coordinates from the event
+      const pageX = x;
+      const pageY = y;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+
+        // More varied sizes
+        const size = 18;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+
+        // Center the particle on the click point
+        particle.style.left = (pageX - size/2) + 'px';
+        particle.style.top = (pageY - size/2) + 'px';
+
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // More varied movement patterns
+        const spreadX = Math.random() * 60 - 30;
+        const spreadY = Math.random() * 60 - 30;
+        particle.style.transform = `translate(${spreadX}px, ${spreadY}px)`;
+
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+    }
+
+    function updateInstructions() {
+      const mode = modeSelect.value;
+      const instructionsTitle = document.getElementById('instructions-title');
+      const instructionsText = document.getElementById('instructions-text');
+
+      if (mode === 'interval') {
+        instructionsTitle.textContent = 'Interval Training';
+        instructionsText.textContent = 'In guitar theory (and music theory in general), intervals are the building blocks of melody and harmony. An interval is the distance between two notes, measured in steps or semitones.';
+      } else {
+        instructionsTitle.textContent = 'Note Training';
+        instructionsText.textContent = 'Knowing the notes of the guitar neck from memory is one of the most powerful things you can do as a guitarist. It unlocks fluency, creativity, and precision in virtually every area of your playing.';
+      }
+    }
+
+    function showModal(content) {
+      const modalOverlay = document.getElementById('modal-overlay');
+      const modalContent = document.getElementById('modal-content-inner');
+      modalContent.innerHTML = content;
+      modalOverlay.style.display = 'flex';
+    }
+
+    function hideModal() {
+      const modalOverlay = document.getElementById('modal-overlay');
+      modalOverlay.style.display = 'none';
+    }
   </script>
 </body>
 </html>
