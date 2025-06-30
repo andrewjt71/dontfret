@@ -283,7 +283,7 @@ function handleClick(e) {
     setTimeout(() => {
       renderFretboard();
       newTask();
-    }, 3000);
+    }, 5000);
     return;
   } else if (mode === 'chord') {
     if (target.chordNotes.includes(note)) {
@@ -330,11 +330,11 @@ function handleClick(e) {
       setTimeout(() => {
         renderFretboard();
         newTask();
-      }, 3000);
+      }, 5000);
     } else {
       setTimeout(() => {
         renderFretboard();
-      }, 2000);
+      }, 4000);
     }
     return;
   }
@@ -373,7 +373,7 @@ function handleClick(e) {
   setTimeout(() => {
     renderFretboard();
     newTask();
-  }, 3000);
+  }, 5000);
 }
 
 document.getElementById('new-task').addEventListener('click', () => {
