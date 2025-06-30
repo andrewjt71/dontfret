@@ -652,3 +652,16 @@ function hideModal() {
   const modalOverlay = document.getElementById('modal-overlay');
   modalOverlay.style.display = 'none';
 }
+
+// Sticky header scroll detection
+function handleScroll() {
+  const header = document.querySelector('.main-header');
+  if (window.scrollY > 50) {
+    header.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+  }
+}
+
+// Add scroll event listener
+window.addEventListener('scroll', handleScroll);
