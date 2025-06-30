@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Learn your fretboard you mug!</title>
+  <title>Don't Fret it</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -316,19 +316,16 @@
       border: 1px solid #444;
       text-align: left;
       max-width: 650px;
-      margin-left: auto;
-      margin-right: auto;
+      margin-left: 0;
     }
     #interval-cheatsheet h3 {
       margin-top: 0;
       color: #f1f1f1;
-      text-align: center;
       margin-bottom: 15px;
     }
     .interval-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       padding: 8px 0;
       border-bottom: 1px solid #333;
     }
@@ -575,10 +572,47 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
+
+    .modal-content .interval-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid #333;
+      text-align: left;
+    }
+
+    .modal-content .interval-name {
+      font-weight: bold;
+      color: #ffcc00;
+      min-width: 120px;
+      margin-right: 20px;
+    }
+
+    .modal-content .interval-semitone {
+      color: #ccc;
+      min-width: 80px;
+      margin-right: 20px;
+    }
+
+    .modal-content .interval-description {
+      color: #aaa;
+      flex: 1;
+    }
+
+    #fretboard-controls {
+      background-color: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px 25px;
+      margin: 0 auto 20px auto;
+      max-width: 650px;
+      border: 1px solid #333;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
 <body>
-  <h1>Learn your fretboard you mug!</h1>
+  <h1>Don't Fret it, learn it</h1>
   <div id="controls">
     <div class="control-section">
       <h3>Training Mode</h3>
@@ -590,35 +624,6 @@
             <option value="interval">Interval Training</option>
           </select>
         </div>
-        <div class="control-group">
-          <label for="show-notes-toggle">Show Notes:</label>
-          <input type="checkbox" id="show-notes-toggle">
-        </div>
-      </div>
-    </div>
-    <div class="control-section">
-      <h3>Note Selection</h3>
-      <div class="control-row">
-        <div class="control-group">
-          <label for="string-select">Choose string:</label>
-          <select id="string-select">
-            <option value="all">All</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <label for="note-type-select">Note type:</label>
-          <select id="note-type-select">
-            <option value="all">All</option>
-            <option value="natural">Naturals only</option>
-            <option value="accidental">Sharps & Flats</option>
-          </select>
-        </div>
       </div>
     </div>
   </div>
@@ -626,6 +631,37 @@
     <h3 id="instructions-title">Note Training</h3>
     <p id="instructions-text">Knowing the notes of the guitar neck from memory is one of the most powerful things you can do as a guitarist. It unlocks fluency, creativity, and precision in virtually every area of your playing.</p>
     <span class="info-icon" id="info-icon">i</span>
+  </div>
+  <div id="fretboard-controls" class="control-section">
+    <h3>Fretboard Controls</h3>
+    <div class="control-row">
+      <div class="control-group">
+        <label for="string-select">Choose string:</label>
+        <select id="string-select">
+          <option value="all">All</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="note-type-select">Note type:</label>
+        <select id="note-type-select">
+          <option value="all">All</option>
+          <option value="natural">Naturals only</option>
+          <option value="accidental">Sharps & Flats</option>
+        </select>
+      </div>
+    </div>
+    <div class="control-row">
+      <div class="control-group">
+        <label for="show-notes-toggle">Show Notes:</label>
+        <input type="checkbox" id="show-notes-toggle">
+      </div>
+    </div>
   </div>
   <div id="task-container">
     <span class="task-label">Current Task</span>
@@ -755,11 +791,15 @@
 
     function updateNoteControlsVisibility() {
       const mode = modeSelect.value;
-      const noteControlsSection = document.querySelector('.control-section:nth-child(2)');
+      const stringSelect = document.getElementById('string-select').parentElement.parentElement;
+      const noteTypeSelect = document.getElementById('note-type-select').parentElement.parentElement;
+
       if (mode === 'interval') {
-        noteControlsSection.style.display = 'none';
+        stringSelect.style.display = 'none';
+        noteTypeSelect.style.display = 'none';
       } else {
-        noteControlsSection.style.display = 'block';
+        stringSelect.style.display = 'flex';
+        noteTypeSelect.style.display = 'flex';
       }
     }
 
@@ -934,6 +974,37 @@
       if (mode === 'interval') {
         const intervalContent = `
           <h3>Interval Reference Guide</h3>
+          <div style="text-align: left; padding-left: 20px">
+            <ol style="padding-left: 20px">
+              <li>They Define Chords
+                <ul style="padding-left: 20px">
+                  <li>Chords are built by stacking intervals on top of a root note.</li>
+                  <li>Example: A major chord = root + major 3rd + perfect 5th.</li>
+                  <li>Understanding intervals helps you build, name, and modify chords (like turning a major into a minor or a dominant 7th).</li>
+                </ul>
+              </li>
+              <li>They Shape Scales
+                <ul style="padding-left: 20px">
+                  <li>Scales are just sequences of notes at defined intervals.</li>
+                  <li>Example: A major scale = W W H W W W H (W = whole step, H = half step).</li>
+                  <li>If you know intervals, you can construct any scale from any root.</li>
+                </ul>
+              </li>
+              <li>They Help With Fretboard Navigation
+                <ul style="padding-left: 20px">
+                  <li>Intervals stay consistent across the fretboard (except between the G and B strings due to tuning).</li>
+                  <li>Learning interval patterns helps you play arpeggios, scales, and chords anywhere on the neck.</li>
+                </ul>
+              </li>
+              <li>They Enable Transposition
+                <ul style="padding-left: 20px">
+                  <li>Once you know a lick or shape by intervals, you can move it up/down the neck to play it in a different key.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+
+
           <div class="interval-row">
             <span class="interval-name">Minor 2nd</span>
             <span class="interval-semitone">1 semitone</span>
@@ -1068,7 +1139,7 @@
         instructionsText.textContent = 'In guitar theory (and music theory in general), intervals are the building blocks of melody and harmony. An interval is the distance between two notes, measured in steps or semitones.';
       } else {
         instructionsTitle.textContent = 'Note Training';
-        instructionsText.textContent = 'Knowing the notes of the guitar neck from memory is one of the most powerful things you can do as a guitarist. It unlocks fluency, creativity, and precision in virtually every area of your playing.';
+        instructionsText.textContent = 'Knowing the notes of the guitar neck from memory is one of the most powerful things you can do as a guitarist. It unlocks fluency, creativity, and precision in virtually every area of your playing. Test your knowledge by  guessing the note on the fretboard.';
       }
     }
 
