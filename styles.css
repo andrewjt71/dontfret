@@ -430,7 +430,7 @@ button:hover {
     flex: unset;
   }
   #fretboard {
-    max-width: calc(100vw - 80px);
+    max-width: calc(100vw - 90px);
     margin: 0 auto 30px auto;
   }
 }
