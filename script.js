@@ -386,8 +386,20 @@ function handleClick(e) {
     }
     return;
   } else if (mode === 'chord') {
+    // Check if this string already has a note selected
+    const stringAlreadyUsed = clickedPositions.some(pos => pos.string === clickedString);
+
+    if (stringAlreadyUsed) {
+      // String already has a note selected
+      marker.classList.add('incorrect');
+      showFeedback(`<div>❌ String already used!</div><div style="font-size: 14px; color: #aaa;">You already selected a note on the ${ordinal(clickedString + 1)} string. Choose a different string.</div>`, 'feedback-incorrect');
+      createParticles(e.clientX, e.clientY, false);
+      fretboard.appendChild(marker);
+      return;
+    }
+
     if (target.chordNotes.includes(note)) {
-      // Correct note, add to selected (even if already selected)
+      // Correct note, add to selected
       target.selectedNotes.push(note);
       // Track the specific position clicked
       clickedPositions.push({ string: clickedString, fret: fret });
