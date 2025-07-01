@@ -176,6 +176,8 @@ function updateNoteControlsVisibility() {
   }
 }
 
+// Helper function to format numbers as ordinals where ordinals are 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th,
+// 11th, 12th
 function ordinal(n) {
   if (n === 1) return "1st";
   if (n === 2) return "2nd";
@@ -229,13 +231,17 @@ function newTask() {
       completed: false
     };
 
-    const chordName = chordType === 'major' ? 'major' :
-                     chordType === 'minor' ? 'minor' :
-                     chordType === 'diminished' ? 'diminished' :
-                     chordType === 'augmented' ? 'augmented' :
-                     chordType === 'major7' ? 'major 7th' :
-                     chordType === 'minor7' ? 'minor 7th' :
-                     chordType === 'dominant7' ? 'dominant 7th' : 'diminished 7th';
+    const chordNameMap = {
+      'major': 'major',
+      'minor': 'minor',
+      'diminished': 'diminished',
+      'augmented': 'augmented',
+      'major7': 'major 7th',
+      'minor7': 'minor 7th',
+      'dominant7': 'dominant 7th',
+      'diminished7': 'diminished 7th'
+    };
+    const chordName = chordNameMap[chordType];
 
     taskDisplay.textContent = `Find all the notes in ${rootNote} ${chordName} chord`;
     return;
@@ -265,7 +271,7 @@ function handleClick(e) {
   const visualIndex = parseInt(e.currentTarget.dataset.string);
   const clickedString = visualIndex;
 
-  const x = event.offsetX;
+  const x = e.offsetX;
   const width = fretboard.clientWidth;
   const fret = Math.floor((x / (width / 12))) + 1;
   const note = noteAt(clickedString, fret);
@@ -626,15 +632,11 @@ function handleScroll() {
   const isMobile = window.innerWidth <= 600;
 
   if (isMobile) {
-    // On mobile, always show scrolled state and never remove it
+    header.classList.add('scrolled');
+  } else if (window.scrollY > 50) {
     header.classList.add('scrolled');
   } else {
-    // On desktop, only show scrolled state when actually scrolled
-    if (window.scrollY > 50) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
+    header.classList.remove('scrolled');
   }
 }
 
@@ -647,7 +649,8 @@ handleScroll();
 function showFeedback(html, className) {
   feedback.textContent = '';
   feedback.classList.remove('feedback-correct', 'feedback-incorrect');
-  void feedback.offsetWidth; // force reflow for animation
-  feedback.innerHTML = html;
-  feedback.classList.add(className);
+  requestAnimationFrame(() => {
+    feedback.innerHTML = html;
+    feedback.classList.add(className);
+  });
 }
