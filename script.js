@@ -264,7 +264,6 @@ function handleClick(e) {
   const mode = modeSelect.value;
   const visualIndex = parseInt(e.currentTarget.dataset.string);
   const clickedString = visualIndex;
-  const selected = stringSelect.value;
 
   const x = event.offsetX;
   const width = fretboard.clientWidth;
@@ -359,7 +358,6 @@ function handleClick(e) {
     }, 2000);
   } else {
     const expectedString = target.string;
-    const expectedFret = target.fret;
     const expectedNote = target.note;
     const expectedStringLabel = ordinal(expectedString + 1);
     const actualStringLabel = ordinal(clickedString + 1);
@@ -653,3 +651,195 @@ function showFeedback(html, className) {
   feedback.innerHTML = html;
   feedback.classList.add(className);
 }
+
+// GDPR Cookie Consent Management
+class CookieConsent {
+  constructor() {
+    this.cookieBanner = document.getElementById('cookie-banner');
+    this.adsenseContainer = document.getElementById('adsense-container');
+    this.hasShownBanner = this.getCookie('cookie_consent_shown');
+    this.consentGiven = this.getCookie('cookie_consent');
+
+    this.init();
+  }
+
+  init() {
+    // Show banner if consent hasn't been given
+    if (!this.hasShownBanner) {
+      setTimeout(() => {
+        this.showBanner();
+      }, 1000); // Show after 1 second
+    } else if (this.consentGiven === 'true') {
+      this.loadAdSense();
+    }
+
+    this.setupEventListeners();
+  }
+
+  showBanner() {
+    this.cookieBanner.classList.add('show');
+  }
+
+  hideBanner() {
+    this.cookieBanner.classList.remove('show');
+  }
+
+  setupEventListeners() {
+    // Accept all cookies
+    document.getElementById('accept-all-cookies').addEventListener('click', () => {
+      this.acceptAll();
+    });
+
+    // Accept selected cookies
+    document.getElementById('accept-selected-cookies').addEventListener('click', () => {
+      this.acceptSelected();
+    });
+
+    // Reject all cookies
+    document.getElementById('reject-cookies').addEventListener('click', () => {
+      this.rejectAll();
+    });
+
+    // Cookie policy link
+    document.getElementById('cookie-policy-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showCookiePolicy();
+    });
+
+    // Privacy policy link
+    document.getElementById('privacy-policy-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showPrivacyPolicy();
+    });
+  }
+
+  acceptAll() {
+    this.setCookie('cookie_consent', 'true', 365);
+    this.setCookie('cookie_consent_shown', 'true', 365);
+    this.setCookie('analytics_cookies', 'true', 365);
+    this.setCookie('advertising_cookies', 'true', 365);
+    this.hideBanner();
+    this.loadAdSense();
+  }
+
+  acceptSelected() {
+    const analytics = document.getElementById('analytics-cookies').checked;
+    const advertising = document.getElementById('advertising-cookies').checked;
+
+    this.setCookie('cookie_consent', 'true', 365);
+    this.setCookie('cookie_consent_shown', 'true', 365);
+    this.setCookie('analytics_cookies', analytics.toString(), 365);
+    this.setCookie('advertising_cookies', advertising.toString(), 365);
+
+    this.hideBanner();
+
+    if (advertising) {
+      this.loadAdSense();
+    }
+  }
+
+  rejectAll() {
+    this.setCookie('cookie_consent', 'false', 365);
+    this.setCookie('cookie_consent_shown', 'true', 365);
+    this.setCookie('analytics_cookies', 'false', 365);
+    this.setCookie('advertising_cookies', 'false', 365);
+    this.hideBanner();
+  }
+
+  loadAdSense() {
+    // Only load AdSense if advertising cookies are accepted
+    if (this.getCookie('advertising_cookies') === 'true') {
+      // Load AdSense script
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7206858645894162';
+      script.crossOrigin = 'anonymous';
+      document.head.appendChild(script);
+
+      // Show ad container and initialize ads
+      script.onload = () => {
+        this.adsenseContainer.style.display = 'block';
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      };
+    }
+  }
+
+  showCookiePolicy() {
+    const content = `
+      <h3>Cookie Policy</h3>
+      <div style="text-align: left; line-height: 1.6;">
+        <p><strong>What are cookies?</strong></p>
+        <p>Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience and keep our guitar learning tool free.</p>
+
+        <p><strong>Types of cookies we use:</strong></p>
+        <ul style="padding-left: 20px;">
+          <li><strong>Essential Cookies:</strong> Required for the website to function properly. These cannot be disabled.</li>
+          <li><strong>Analytics Cookies:</strong> Help us understand how our site is used so we can improve it.</li>
+          <li><strong>Advertising Cookies:</strong> Help us show relevant advertisements to keep this tool free.</li>
+        </ul>
+
+        <p><strong>Your choices:</strong></p>
+        <p>You can change your cookie preferences at any time by clicking the cookie settings link in the footer.</p>
+
+        <p><strong>Third-party cookies:</strong></p>
+        <p>We use Google AdSense for advertising. Google may use cookies to show you relevant ads based on your interests.</p>
+      </div>
+    `;
+    showModal(content);
+  }
+
+  showPrivacyPolicy() {
+    const content = `
+      <h3>Privacy Policy</h3>
+      <div style="text-align: left; line-height: 1.6;">
+        <p><strong>Information we collect:</strong></p>
+        <p>We collect minimal information necessary to provide our guitar learning service. This includes:</p>
+        <ul style="padding-left: 20px;">
+          <li>Usage data to improve our tool</li>
+          <li>Cookie preferences</li>
+          <li>Basic analytics to understand how our site is used</li>
+        </ul>
+
+        <p><strong>How we use your information:</strong></p>
+        <ul style="padding-left: 20px;">
+          <li>To provide and improve our guitar learning tool</li>
+          <li>To show relevant advertisements (with your consent)</li>
+          <li>To understand how our site is used</li>
+        </ul>
+
+        <p><strong>We do not:</strong></p>
+        <ul style="padding-left: 20px;">
+          <li>Collect personal information like names or email addresses</li>
+          <li>Share your data with third parties (except as required for advertising with consent)</li>
+          <li>Use your data for purposes other than providing our service</li>
+        </ul>
+
+        <p><strong>Your rights:</strong></p>
+        <p>You have the right to control your cookie preferences and can change them at any time.</p>
+      </div>
+    `;
+    showModal(content);
+  }
+
+  setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+  }
+
+  getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+}
+
+// Initialize cookie consent when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  new CookieConsent();
+});
