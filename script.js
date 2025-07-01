@@ -187,11 +187,25 @@ function renderFretboard() {
     });
   }
 
-  // Always show open string notes (fret 0)
+  // Always show open string notes (fret 0) with clickable areas
   for (let string = 0; string < 6; string++) {
     const note = noteAt(string, 0);
     const edgeMargin = 0.05;
     const y = edgeMargin * height + (string / 5) * (height * (1 - 2 * edgeMargin));
+
+    // Create clickable area for open string
+    const openStringHitbox = document.createElement('div');
+    openStringHitbox.classList.add('open-string-hitbox');
+    openStringHitbox.style.position = 'absolute';
+    openStringHitbox.style.left = '-30px';
+    openStringHitbox.style.top = `${y - 6}px`;
+    openStringHitbox.style.width = '20px';
+    openStringHitbox.style.height = '12px';
+    openStringHitbox.style.cursor = 'pointer';
+    openStringHitbox.dataset.string = string;
+    openStringHitbox.dataset.fret = '0';
+    openStringHitbox.addEventListener('click', handleClick);
+    fretboard.appendChild(openStringHitbox);
 
     const noteLabel = document.createElement('div');
     noteLabel.classList.add('note-label');
@@ -356,13 +370,15 @@ function newTask() {
 
   let note, fret;
   do {
-    fret = Math.floor(Math.random() * 12) + 1;
+    // Allow open strings (fret 0) or fretted notes (fret 1-12)
+    fret = Math.floor(Math.random() * 13); // 0-12
     note = noteAt(string, fret);
   } while (!isNoteValid(note));
 
   target = { string, fret, note };
   const displayString = ordinal(string + 1);
-  taskDisplay.textContent = `Click on the ${note} note on the ${displayString} string.`;
+  const fretDescription = fret === 0 ? 'open' : `${fret}${fret === 1 ? 'st' : fret === 2 ? 'nd' : fret === 3 ? 'rd' : 'th'} fret`;
+  taskDisplay.textContent = `Click on the ${note} note on the ${displayString} string (${fretDescription}).`;
 }
 
 function handleClick(e) {
@@ -370,13 +386,23 @@ function handleClick(e) {
   const visualIndex = parseInt(e.currentTarget.dataset.string);
   const clickedString = visualIndex;
 
-  const x = e.offsetX;
-  const width = fretboard.clientWidth;
-  const fret = Math.floor((x / (width / 12))) + 1;
-  const note = noteAt(clickedString, fret);
+  // Check if this is an open string click
+  const isOpenString = e.currentTarget.classList.contains('open-string-hitbox');
+  let fret, note, x, y;
 
-  const edgeMargin = 0.05;
-  const y = edgeMargin * fretboard.clientHeight + (clickedString / 5) * (fretboard.clientHeight * (1 - 2 * edgeMargin));
+  if (isOpenString) {
+    fret = 0;
+    note = noteAt(clickedString, 0);
+    x = -25; // Position marker at the open string note position
+    y = e.currentTarget.offsetTop + 6; // Center on the hitbox
+  } else {
+    x = e.offsetX;
+    const width = fretboard.clientWidth;
+    fret = Math.floor((x / (width / 12))) + 1;
+    note = noteAt(clickedString, fret);
+    y = e.currentTarget.offsetTop + 6; // Center on the string
+  }
+
   const marker = document.createElement('div');
   marker.classList.add('marker');
   marker.style.left = `${x}px`;
@@ -523,7 +549,8 @@ function handleClick(e) {
 
   if (note === target.note && clickedString === target.string) {
     marker.classList.add('correct');
-    showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string!</div>`, 'feedback-correct');
+    const fretDescription = target.fret === 0 ? 'open' : `${target.fret}${target.fret === 1 ? 'st' : target.fret === 2 ? 'nd' : target.fret === 3 ? 'rd' : 'th'} fret`;
+    showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${ordinal(clickedString + 1)} string (${fretDescription})!</div>`, 'feedback-correct');
     createParticles(e.clientX, e.clientY, true);
     fretboard.appendChild(marker);
     setTimeout(() => {
@@ -535,8 +562,9 @@ function handleClick(e) {
     const expectedNote = target.note;
     const expectedStringLabel = ordinal(expectedString + 1);
     const actualStringLabel = ordinal(clickedString + 1);
+    const expectedFretDescription = target.fret === 0 ? 'open' : `${target.fret}${target.fret === 1 ? 'st' : target.fret === 2 ? 'nd' : target.fret === 3 ? 'rd' : 'th'} fret`;
     marker.classList.add('incorrect');
-    showFeedback(`<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string.</div>`, 'feedback-incorrect');
+    showFeedback(`<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${expectedNote} on the ${expectedStringLabel} string (${expectedFretDescription}).</div>`, 'feedback-incorrect');
     createParticles(e.clientX, e.clientY, false);
     fretboard.appendChild(marker);
   }
@@ -562,6 +590,18 @@ modeSelect.addEventListener('change', () => {
   if (modeSelect.value === 'interval') {
     stringSelect.value = 'all';
   }
+
+  // Clear chord/scale training state when changing modes
+  clickedPositions = [];
+  incorrectPositions = [];
+  if (target && target.selectedNotes) {
+    target.selectedNotes = [];
+  }
+
+  // Clear feedback
+  feedback.textContent = '';
+  feedback.classList.remove('feedback-correct', 'feedback-incorrect');
+
   renderFretboard();
   newTask();
   updateInstructions();
