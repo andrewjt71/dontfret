@@ -197,7 +197,7 @@ function renderFretboard() {
     const openStringHitbox = document.createElement('div');
     openStringHitbox.classList.add('open-string-hitbox');
     openStringHitbox.style.position = 'absolute';
-    openStringHitbox.style.left = '-30px';
+    openStringHitbox.style.left = '-14px';
     openStringHitbox.style.top = `${y - 6}px`;
     openStringHitbox.style.width = '20px';
     openStringHitbox.style.height = '12px';
@@ -210,7 +210,7 @@ function renderFretboard() {
     const noteLabel = document.createElement('div');
     noteLabel.classList.add('note-label');
     noteLabel.classList.add(note.includes('#') ? 'accidental' : 'natural');
-    noteLabel.style.left = `-25px`; // Position to the left of the fretboard
+    noteLabel.style.left = `-14px`;
     noteLabel.style.top = `${y}px`;
     noteLabel.textContent = note;
     fretboard.appendChild(noteLabel);
@@ -396,7 +396,7 @@ function handleClick(e) {
   if (isOpenString) {
     fret = 0;
     note = noteAt(clickedString, 0);
-    x = -25; // Position marker at the open string note position
+    x = -14;
     y = edgeMargin * height + (clickedString / 5) * (height * (1 - 2 * edgeMargin));
   } else {
     x = e.offsetX;
