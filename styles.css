@@ -265,8 +265,8 @@ button:hover {
 }
 
 #new-task {
-  width: 45px;
-  height: 45px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   border-radius: 50%;
   display: flex;
@@ -340,12 +340,15 @@ button:hover {
 
 .task-main {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 #task-text {
-  flex: 1;
+  display: inline-block;
+  text-align: center;
 }
 
 #task::before {
@@ -438,12 +441,10 @@ button:hover {
 }
 
 .hint-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   margin-top: 8px;
+  justify-content: center;
+  display: flex;
+  gap: 6px;
 }
 
 .hint-text {
@@ -799,11 +800,6 @@ button:hover {
   button {
     font-size: 14px;
     padding: 10px 20px;
-  }
-
-  #new-task {
-    width: 45px;
-    height: 45px;
   }
 
   #new-task::before {
