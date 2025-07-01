@@ -137,7 +137,7 @@ function renderFretboard() {
   // Show previously selected correct notes in chord training mode
   if (mode === 'chord' && clickedPositions.length > 0) {
     clickedPositions.forEach(pos => {
-      const x = (pos.fret - 1 + 0.5) * (width / 12);
+      const x = pos.fret === 0 ? -14 : (pos.fret - 1 + 0.5) * (width / 12);
       const edgeMargin = 0.05;
       const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
       const marker = document.createElement('div');
@@ -150,7 +150,7 @@ function renderFretboard() {
   // Show previously selected correct notes in scale training mode
   if (mode === 'scale' && clickedPositions.length > 0) {
     clickedPositions.forEach(pos => {
-      const x = (pos.fret - 1 + 0.5) * (width / 12);
+      const x = pos.fret === 0 ? -14 : (pos.fret - 1 + 0.5) * (width / 12);
       const edgeMargin = 0.05;
       const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
       const marker = document.createElement('div');
@@ -163,7 +163,7 @@ function renderFretboard() {
   // Show previously selected incorrect notes in chord training mode
   if (mode === 'chord' && incorrectPositions.length > 0) {
     incorrectPositions.forEach(pos => {
-      const x = (pos.fret - 1 + 0.5) * (width / 12);
+      const x = pos.fret === 0 ? -14 : (pos.fret - 1 + 0.5) * (width / 12);
       const edgeMargin = 0.05;
       const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
       const marker = document.createElement('div');
@@ -176,7 +176,7 @@ function renderFretboard() {
   // Show previously selected incorrect notes in scale training mode
   if (mode === 'scale' && incorrectPositions.length > 0) {
     incorrectPositions.forEach(pos => {
-      const x = (pos.fret - 1 + 0.5) * (width / 12);
+      const x = pos.fret === 0 ? -14 : (pos.fret - 1 + 0.5) * (width / 12);
       const edgeMargin = 0.05;
       const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
       const marker = document.createElement('div');
