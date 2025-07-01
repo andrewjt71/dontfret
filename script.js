@@ -1029,6 +1029,26 @@ document.getElementById('modal-overlay').addEventListener('click', (e) => {
 // Scroll event listener
 window.addEventListener('scroll', handleScroll);
 
+// Resize event listener for responsive fretboard
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  // Debounce resize events to avoid excessive re-rendering
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    renderFretboard();
+    handleScroll(); // Update header state on resize
+  }, 250); // Wait 250ms after last resize event
+});
+
+// Orientation change event listener
+window.addEventListener('orientationchange', () => {
+  // Wait for orientation change to complete
+  setTimeout(() => {
+    renderFretboard();
+    handleScroll(); // Update header state on orientation change
+  }, 500); // Wait 500ms for orientation change to settle
+});
+
 // ============================================================================
 // INITIALIZATION
 // ============================================================================
