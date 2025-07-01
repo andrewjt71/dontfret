@@ -744,27 +744,28 @@ button:hover {
   }
 
   .main-header {
-    padding: 20px 15px;
+    padding: 10px 15px !important;
   }
 
   .main-header.scrolled {
-    padding: 10px 15px;
+    padding: 10px 15px !important;
   }
 
   .title-section h1 {
-    font-size: 1.5em;
+    font-size: 1em !important;
   }
 
   .main-header.scrolled .title-section h1 {
-    font-size: 1em;
+    font-size: 1em !important;
   }
 
   .title-section .subtitle {
-    font-size: 0.9em;
+    display: none !important;
   }
 
   .support-link {
     min-width: 150px;
+    display: block !important;
   }
 
   .love-message {

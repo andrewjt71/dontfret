@@ -625,15 +625,26 @@ function hideModal() {
 // Sticky header scroll detection
 function handleScroll() {
   const header = document.querySelector('.main-header');
-  if (window.scrollY > 50) {
+  const isMobile = window.innerWidth <= 600;
+
+  if (isMobile) {
+    // On mobile, always show scrolled state and never remove it
     header.classList.add('scrolled');
   } else {
-    header.classList.remove('scrolled');
+    // On desktop, only show scrolled state when actually scrolled
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
   }
 }
 
 // Add scroll event listener
 window.addEventListener('scroll', handleScroll);
+
+// Call handleScroll on page load to set initial state
+handleScroll();
 
 function showFeedback(html, className) {
   feedback.textContent = '';
