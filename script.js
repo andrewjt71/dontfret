@@ -757,10 +757,10 @@ class CookieConsent {
       document.head.appendChild(script);
 
       // Show ad container and initialize ads
-      script.onload = () => {
-        this.adsenseContainer.style.display = 'block';
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      };
+      // script.onload = () => {
+      //   this.adsenseContainer.style.display = 'block';
+      //   (adsbygoogle = window.adsbygoogle || []).push({});
+      // };
     }
   }
 
