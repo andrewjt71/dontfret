@@ -741,7 +741,7 @@ function handleNoteClick(note, clickedString, fret, x, y, clientX, clientY) {
     const expectedStringLabel = formatOrdinal(expectedString + 1);
     const actualStringLabel = formatOrdinal(clickedString + 1);
     marker.classList.add('incorrect');
-    showFeedback(`<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${note} on the ${expectedStringLabel} string.</div>`, 'feedback-incorrect');
+    showFeedback(`<div>❌ OOPS</div><div style="font-size: 14px; color: #aaa;">You clicked ${note} on the ${actualStringLabel} string. Expected ${target.note} on the ${expectedStringLabel} string.</div>`, 'feedback-incorrect');
     createParticles(clientX, clientY, false);
     fretboard.appendChild(marker);
   }
