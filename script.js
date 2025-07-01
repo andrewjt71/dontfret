@@ -187,10 +187,25 @@ function renderFretboard() {
     });
   }
 
-  // Add note labels if toggle is enabled
+  // Always show open string notes (fret 0)
+  for (let string = 0; string < 6; string++) {
+    const note = noteAt(string, 0);
+    const edgeMargin = 0.05;
+    const y = edgeMargin * height + (string / 5) * (height * (1 - 2 * edgeMargin));
+
+    const noteLabel = document.createElement('div');
+    noteLabel.classList.add('note-label');
+    noteLabel.classList.add(note.includes('#') ? 'accidental' : 'natural');
+    noteLabel.style.left = `-25px`; // Position to the left of the fretboard
+    noteLabel.style.top = `${y}px`;
+    noteLabel.textContent = note;
+    fretboard.appendChild(noteLabel);
+  }
+
+  // Add note labels for all frets if toggle is enabled
   if (showNotes) {
     for (let string = 0; string < 6; string++) {
-      for (let fret = 0; fret <= 12; fret++) {
+      for (let fret = 1; fret <= 12; fret++) { // Start from fret 1 since fret 0 is handled above
         const note = noteAt(string, fret);
         const x = (fret / (fretCount - 1)) * width;
         const edgeMargin = 0.05;
