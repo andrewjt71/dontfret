@@ -1026,6 +1026,16 @@ document.getElementById('modal-overlay').addEventListener('click', (e) => {
   }
 });
 
+// Keyboard event listener for closing modals with Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modalOverlay = document.getElementById('modal-overlay');
+    if (modalOverlay.style.display === 'flex') {
+      hideModal();
+    }
+  }
+});
+
 // Scroll event listener
 window.addEventListener('scroll', handleScroll);
 
