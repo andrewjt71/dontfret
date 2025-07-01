@@ -59,7 +59,9 @@ function renderFretboard() {
   const showNotes = showNotesToggle.checked;
 
   for (let string = 0; string < 6; string++) {
-    const y = ((string + 1) / 7) * height;
+    // Position strings closer to edges, with edge strings very close to the fretboard edges
+    const edgeMargin = 0.05; // 5% margin from edges
+    const y = edgeMargin * height + (string / 5) * (height * (1 - 2 * edgeMargin));
     const div = document.createElement('div');
     div.classList.add('string-hitbox');
     div.style.top = `${y}px`;
@@ -115,7 +117,8 @@ function renderFretboard() {
   if (mode === 'chord' && clickedPositions.length > 0) {
     clickedPositions.forEach(pos => {
       const x = (pos.fret - 1 + 0.5) * (width / 12);
-      const y = ((pos.string + 1) / 7) * height;
+      const edgeMargin = 0.05;
+      const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
       const marker = document.createElement('div');
       marker.classList.add('marker', 'correct');
       marker.style.left = `${x}px`;
@@ -127,7 +130,8 @@ function renderFretboard() {
   if (mode === 'chord' && incorrectPositions.length > 0) {
     incorrectPositions.forEach(pos => {
       const x = (pos.fret - 1 + 0.5) * (width / 12);
-      const y = ((pos.string + 1) / 7) * height;
+      const edgeMargin = 0.05;
+      const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
       const marker = document.createElement('div');
       marker.classList.add('marker', 'incorrect');
       marker.style.left = `${x}px`;
@@ -142,7 +146,8 @@ function renderFretboard() {
       for (let fret = 0; fret <= 12; fret++) {
         const note = noteAt(string, fret);
         const x = (fret / (fretCount - 1)) * width;
-        const y = ((string + 1) / 7) * height;
+        const edgeMargin = 0.05;
+        const y = edgeMargin * height + (string / 5) * (height * (1 - 2 * edgeMargin));
 
         const noteLabel = document.createElement('div');
         noteLabel.classList.add('note-label');
@@ -266,7 +271,8 @@ function handleClick(e) {
   const fret = Math.floor((x / (width / 12))) + 1;
   const note = noteAt(clickedString, fret);
 
-  const y = ((clickedString + 1) / 7) * fretboard.clientHeight;
+  const edgeMargin = 0.05;
+  const y = edgeMargin * fretboard.clientHeight + (clickedString / 5) * (fretboard.clientHeight * (1 - 2 * edgeMargin));
   const marker = document.createElement('div');
   marker.classList.add('marker');
   marker.style.left = `${x}px`;
