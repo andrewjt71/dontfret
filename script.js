@@ -728,8 +728,7 @@ function handleNoteClick(note, clickedString, fret, x, y, clientX, clientY) {
 
   if (note === target.note && clickedString === target.string) {
     marker.classList.add('correct');
-    const fretDescription = formatFretDescription(target.fret);
-    showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${formatOrdinal(clickedString + 1)} string (${fretDescription})!</div>`, 'feedback-correct');
+    showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">You found ${note} on the ${formatOrdinal(clickedString + 1)} string!</div>`, 'feedback-correct');
     createParticles(clientX, clientY, true);
     fretboard.appendChild(marker);
     setTimeout(() => {
