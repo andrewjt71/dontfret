@@ -387,36 +387,32 @@ function handleClick(e) {
     return;
   } else if (mode === 'chord') {
     if (target.chordNotes.includes(note)) {
-      if (target.selectedNotes.includes(note)) {
-        // Note already selected
-        marker.classList.add('incorrect');
-        showFeedback(`<div>❌ Already found!</div><div style="font-size: 14px; color: #aaa;">You already found ${note}. Find the remaining notes: ${target.chordNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`, 'feedback-incorrect');
-        createParticles(e.clientX, e.clientY, false);
-      } else {
-        // Correct note, add to selected
-        target.selectedNotes.push(note);
-        // Track the specific position clicked
-        clickedPositions.push({ string: clickedString, fret: fret });
-        marker.classList.add('correct');
+      // Correct note, add to selected (even if already selected)
+      target.selectedNotes.push(note);
+      // Track the specific position clicked
+      clickedPositions.push({ string: clickedString, fret: fret });
+      marker.classList.add('correct');
 
-        if (target.selectedNotes.length === target.chordNotes.length) {
-          // Chord complete!
-          showFeedback(`<div>✅ Chord Complete!</div><div style="font-size: 14px; color: #aaa;">You found all notes in ${target.root} ${target.chordType} chord!</div>`, 'feedback-correct');
-          createParticles(e.clientX, e.clientY, true);
-          target.completed = true;
-          setTimeout(() => {
-            // Clear selected notes and clicked positions for next task
-            target.selectedNotes = [];
-            clickedPositions = [];
-            incorrectPositions = [];
-            renderFretboard();
-            newTask();
-          }, 2000);
-        } else {
-          // Still more notes to find - don't show remaining notes
-          showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">Found ${note}.</div>`, 'feedback-correct');
-          createParticles(e.clientX, e.clientY, true);
-        }
+      // Count unique notes for completion check
+      const uniqueSelectedNotes = [...new Set(target.selectedNotes)];
+
+      if (uniqueSelectedNotes.length === target.chordNotes.length) {
+        // Chord complete!
+        showFeedback(`<div>✅ Chord Complete!</div><div style="font-size: 14px; color: #aaa;">You found all notes in ${target.root} ${target.chordType} chord!</div>`, 'feedback-correct');
+        createParticles(e.clientX, e.clientY, true);
+        target.completed = true;
+        setTimeout(() => {
+          // Clear selected notes and clicked positions for next task
+          target.selectedNotes = [];
+          clickedPositions = [];
+          incorrectPositions = [];
+          renderFretboard();
+          newTask();
+        }, 2000);
+      } else {
+        // Still more notes to find - don't show remaining notes
+        showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">Found ${note}.</div>`, 'feedback-correct');
+        createParticles(e.clientX, e.clientY, true);
       }
     } else {
       // Wrong note
