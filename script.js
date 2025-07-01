@@ -23,9 +23,30 @@ const chords = {
   'diminished7': [0, 3, 6, 9], // root, minor 3rd, diminished 5th, diminished 7th
 };
 
+// Scale definitions (intervals from root)
+const scales = {
+  'major': [0, 2, 4, 5, 7, 9, 11], // W-W-H-W-W-W-H
+  'natural_minor': [0, 2, 3, 5, 7, 8, 10], // W-H-W-W-H-W-W
+  'harmonic_minor': [0, 2, 3, 5, 7, 8, 11], // W-H-W-W-H-WH-H
+  'melodic_minor': [0, 2, 3, 5, 7, 9, 11], // W-H-W-W-W-W-H
+  'pentatonic_major': [0, 2, 4, 7, 9], // 5-note scale
+  'pentatonic_minor': [0, 3, 5, 7, 10], // 5-note scale
+  'blues': [0, 3, 5, 6, 7, 10], // 6-note scale with blue note
+  'dorian': [0, 2, 3, 5, 7, 9, 10], // W-H-W-W-W-H-W
+  'mixolydian': [0, 2, 4, 5, 7, 9, 10], // W-W-H-W-W-H-W
+  'lydian': [0, 2, 4, 6, 7, 9, 11], // W-W-W-H-W-W-H
+  'phrygian': [0, 1, 3, 5, 7, 8, 10], // H-W-W-W-H-W-W
+  'locrian': [0, 1, 3, 5, 6, 8, 10], // H-W-W-H-W-W-W
+};
+
 function getChordNotes(rootNote, chordType) {
   const rootIndex = noteMap.indexOf(rootNote);
   return chords[chordType].map(interval => noteMap[(rootIndex + interval) % 12]);
+}
+
+function getScaleNotes(rootNote, scaleType) {
+  const rootIndex = noteMap.indexOf(rootNote);
+  return scales[scaleType].map(interval => noteMap[(rootIndex + interval) % 12]);
 }
 
 function noteAt(stringIndex, fret) {
@@ -126,8 +147,34 @@ function renderFretboard() {
       fretboard.appendChild(marker);
     });
   }
+  // Show previously selected correct notes in scale training mode
+  if (mode === 'scale' && clickedPositions.length > 0) {
+    clickedPositions.forEach(pos => {
+      const x = (pos.fret - 1 + 0.5) * (width / 12);
+      const edgeMargin = 0.05;
+      const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
+      const marker = document.createElement('div');
+      marker.classList.add('marker', 'correct');
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      fretboard.appendChild(marker);
+    });
+  }
   // Show previously selected incorrect notes in chord training mode
   if (mode === 'chord' && incorrectPositions.length > 0) {
+    incorrectPositions.forEach(pos => {
+      const x = (pos.fret - 1 + 0.5) * (width / 12);
+      const edgeMargin = 0.05;
+      const y = edgeMargin * height + (pos.string / 5) * (height * (1 - 2 * edgeMargin));
+      const marker = document.createElement('div');
+      marker.classList.add('marker', 'incorrect');
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      fretboard.appendChild(marker);
+    });
+  }
+  // Show previously selected incorrect notes in scale training mode
+  if (mode === 'scale' && incorrectPositions.length > 0) {
     incorrectPositions.forEach(pos => {
       const x = (pos.fret - 1 + 0.5) * (width / 12);
       const edgeMargin = 0.05;
@@ -167,7 +214,7 @@ function updateNoteControlsVisibility() {
   const stringSelect = document.getElementById('string-select').parentElement.parentElement;
   const noteTypeSelect = document.getElementById('note-type-select').parentElement.parentElement;
 
-  if (mode === 'interval' || mode === 'chord') {
+  if (mode === 'interval' || mode === 'chord' || mode === 'scale') {
     stringSelect.style.display = 'none';
     noteTypeSelect.style.display = 'none';
   } else {
@@ -244,6 +291,43 @@ function newTask() {
     const chordName = chordNameMap[chordType];
 
     taskDisplay.textContent = `Find all the notes in ${rootNote} ${chordName} chord`;
+    return;
+  } else if (mode === 'scale') {
+    const scaleTypes = Object.keys(scales);
+    const scaleType = scaleTypes[Math.floor(Math.random() * scaleTypes.length)];
+    const rootNote = noteMap[Math.floor(Math.random() * 12)];
+    const scaleNotes = getScaleNotes(rootNote, scaleType);
+
+    // Clear clicked positions for new task
+    clickedPositions = [];
+    incorrectPositions = [];
+
+    target = {
+      mode: 'scale',
+      root: rootNote,
+      scaleType: scaleType,
+      scaleNotes: scaleNotes,
+      selectedNotes: [],
+      completed: false
+    };
+
+    const scaleNameMap = {
+      'major': 'major',
+      'natural_minor': 'natural minor',
+      'harmonic_minor': 'harmonic minor',
+      'melodic_minor': 'melodic minor',
+      'pentatonic_major': 'major pentatonic',
+      'pentatonic_minor': 'minor pentatonic',
+      'blues': 'blues',
+      'dorian': 'dorian',
+      'mixolydian': 'mixolydian',
+      'lydian': 'lydian',
+      'phrygian': 'phrygian',
+      'locrian': 'locrian'
+    };
+    const scaleName = scaleNameMap[scaleType];
+
+    taskDisplay.textContent = `Find all the notes in ${rootNote} ${scaleName} scale`;
     return;
   }
 
@@ -347,6 +431,67 @@ function handleClick(e) {
 
     // Only redraw and clear feedback when the chord is completed (handled above)
     return;
+  } else if (mode === 'scale') {
+    if (target.scaleNotes.includes(note)) {
+      if (target.selectedNotes.includes(note)) {
+        // Note already selected
+        marker.classList.add('incorrect');
+        showFeedback(`<div>❌ Already found!</div><div style="font-size: 14px; color: #aaa;">You already found ${note}. Find the remaining notes: ${target.scaleNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`, 'feedback-incorrect');
+        createParticles(e.clientX, e.clientY, false);
+      } else {
+        // Correct note, add to selected
+        target.selectedNotes.push(note);
+        // Track the specific position clicked
+        clickedPositions.push({ string: clickedString, fret: fret });
+        marker.classList.add('correct');
+
+        if (target.selectedNotes.length === target.scaleNotes.length) {
+          // Scale complete!
+          const scaleNameMap = {
+            'major': 'major',
+            'natural_minor': 'natural minor',
+            'harmonic_minor': 'harmonic minor',
+            'melodic_minor': 'melodic minor',
+            'pentatonic_major': 'major pentatonic',
+            'pentatonic_minor': 'minor pentatonic',
+            'blues': 'blues',
+            'dorian': 'dorian',
+            'mixolydian': 'mixolydian',
+            'lydian': 'lydian',
+            'phrygian': 'phrygian',
+            'locrian': 'locrian'
+          };
+          const scaleName = scaleNameMap[target.scaleType];
+          showFeedback(`<div>✅ Scale Complete!</div><div style="font-size: 14px; color: #aaa;">You found all notes in ${target.root} ${scaleName} scale!</div>`, 'feedback-correct');
+          createParticles(e.clientX, e.clientY, true);
+          target.completed = true;
+          setTimeout(() => {
+            // Clear selected notes and clicked positions for next task
+            target.selectedNotes = [];
+            clickedPositions = [];
+            incorrectPositions = [];
+            renderFretboard();
+            newTask();
+          }, 2000);
+        } else {
+          // Still more notes to find
+          showFeedback(`<div>✅ Good!</div><div style="font-size: 14px; color: #aaa;">Found ${note}.</div>`, 'feedback-correct');
+          createParticles(e.clientX, e.clientY, true);
+        }
+      }
+    } else {
+      // Wrong note
+      marker.classList.add('incorrect');
+      showFeedback(`<div>❌ Not in scale!</div><div style="font-size: 14px; color: #aaa;">${note} is not in ${target.root} ${target.scaleType} scale. Need: ${target.scaleNotes.filter(n => !target.selectedNotes.includes(n)).join(', ')}</div>`, 'feedback-incorrect');
+      createParticles(e.clientX, e.clientY, false);
+      // Track the specific incorrect position clicked
+      incorrectPositions.push({ string: clickedString, fret: fret });
+    }
+
+    fretboard.appendChild(marker);
+
+    // Only redraw and clear feedback when the scale is completed (handled above)
+    return;
   }
 
   marker.classList.add('marker');
@@ -375,8 +520,8 @@ function handleClick(e) {
 }
 
 document.getElementById('new-task').addEventListener('click', () => {
-  // Clear chord training state when manually refreshing
-  if (modeSelect.value === 'chord') {
+  // Clear chord/scale training state when manually refreshing
+  if (modeSelect.value === 'chord' || modeSelect.value === 'scale') {
     clickedPositions = [];
     incorrectPositions = [];
     if (target && target.selectedNotes) {
@@ -423,6 +568,8 @@ document.getElementById('info-icon').addEventListener('click', () => {
     contentId = 'interval-modal-content';
   } else if (mode === 'chord') {
     contentId = 'chord-modal-content';
+  } else if (mode === 'scale') {
+    contentId = 'scale-modal-content';
   } else {
     contentId = 'note-modal-content';
   }
@@ -494,6 +641,9 @@ function updateInstructions() {
   } else if (mode === 'chord') {
     instructionsTitle.textContent = 'Chord Training';
     instructionsText.textContent = 'Learn to identify the notes that make up different chord types. Click on all the notes that belong to the given chord. You can select notes in any order, and the exercise is complete when you\'ve found all the required notes.';
+  } else if (mode === 'scale') {
+    instructionsTitle.textContent = 'Scale Training';
+    instructionsText.textContent = 'Master scale construction by identifying all the notes in different scale types. Click on each note that belongs to the given scale. This training helps you understand scale patterns and improves your ability to play scales across the fretboard.';
   } else {
     instructionsTitle.textContent = 'Note Training';
     instructionsText.textContent = 'Knowing the notes of the guitar neck from memory is one of the most powerful things you can do as a guitarist. It unlocks fluency, creativity, and precision in virtually every area of your playing. Test your knowledge by  guessing the note on the fretboard.';
