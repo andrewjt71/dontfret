@@ -410,36 +410,6 @@ document.getElementById('info-icon').addEventListener('click', () => {
   if (mode === 'interval') {
     const intervalContent = `
       <h3>Interval Reference Guide</h3>
-      <div style="text-align: left; padding-left: 20px">
-        <ol style="padding-left: 20px">
-          <li>They Define Chords
-            <ul style="padding-left: 20px">
-              <li>Chords are built by stacking intervals on top of a root note.</li>
-              <li>Example: A major chord = root + major 3rd + perfect 5th.</li>
-              <li>Understanding intervals helps you build, name, and modify chords (like turning a major into a minor or a dominant 7th).</li>
-            </ul>
-          </li>
-          <li>They Shape Scales
-            <ul style="padding-left: 20px">
-              <li>Scales are just sequences of notes at defined intervals.</li>
-              <li>Example: A major scale = W W H W W W H (W = whole step, H = half step).</li>
-              <li>If you know intervals, you can construct any scale from any root.</li>
-            </ul>
-          </li>
-          <li>They Help With Fretboard Navigation
-            <ul style="padding-left: 20px">
-              <li>Intervals stay consistent across the fretboard (except between the G and B strings due to tuning).</li>
-              <li>Learning interval patterns helps you play arpeggios, scales, and chords anywhere on the neck.</li>
-            </ul>
-          </li>
-          <li>They Enable Transposition
-            <ul style="padding-left: 20px">
-              <li>Once you know a lick or shape by intervals, you can move it up/down the neck to play it in a different key.</li>
-            </ul>
-          </li>
-        </ol>
-      </div>
-
       <div class="interval-row">
         <span class="interval-name">Minor 2nd</span>
         <span class="interval-semitone">1 semitone</span>
