@@ -85,11 +85,16 @@ function renderFretboard() {
     line.style.left = `${x}px`;
     fretboard.appendChild(line);
 
-    const label = document.createElement('div');
-    label.classList.add('fret-label');
-    label.style.left = `${x}px`;
-    label.textContent = fret;
-    fretboard.appendChild(label);
+    // Add fret labels between frets, starting from 1
+    if (fret > 0) {
+      const label = document.createElement('div');
+      label.classList.add('fret-label');
+      // Position label between the previous fret and current fret
+      const labelX = ((fret - 0.5) / (fretCount - 1)) * width;
+      label.style.left = `${labelX}px`;
+      label.textContent = fret;
+      fretboard.appendChild(label);
+    }
 
     if (dotFrets.includes(fret)) {
       const dot = document.createElement('div');
