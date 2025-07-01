@@ -123,12 +123,12 @@ function renderFretboard() {
       const dot = document.createElement('div');
       dot.classList.add('dot-marker');
       dot.style.left = `${x - (width / (fretCount - 1)) / 2}px`;
-      dot.style.top = `${fret === 12 ? height / 2 - 30 : height / 2}px`;
+      dot.style.top = `${fret === 12 ? height / 2 - 45 : height / 2}px`;
       fretboard.appendChild(dot);
 
       if (fret === 12) {
         const dot2 = dot.cloneNode();
-        dot2.style.top = `${height / 2 + 30}px`;
+        dot2.style.top = `${height / 2 + 45}px`;
         fretboard.appendChild(dot2);
       }
     }
