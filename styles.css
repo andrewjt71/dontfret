@@ -269,8 +269,15 @@ button:hover {
   position: relative;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.task-row {
+  display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   gap: 15px;
 }
 #task-text {
@@ -512,20 +519,35 @@ button:hover {
   color: #ccc;
 }
 
+.hint-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: #666;
+}
+
+.hint-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+  font-style: italic;
+}
+
 .info-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   background: #666;
   border-radius: 50%;
   color: #fff;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-left: 10px;
 }
 
 .info-icon:hover {
