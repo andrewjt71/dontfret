@@ -372,10 +372,6 @@ button:hover {
   font-weight: 400;
 }
 
-#helpful-resources {
-  display: none;
-}
-
 #interval-cheatsheet {
   margin-top: 30px;
   padding: 20px;
@@ -767,25 +763,6 @@ button:hover {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* AdSense Container */
-.adsense-container {
-  max-width: 650px;
-  margin: 30px auto;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.ad-label {
-  font-size: 0.8em;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-}
-
 /* Responsive styles */
 @media (max-width: 600px) {
   #controls {
@@ -941,40 +918,6 @@ button:hover {
   .faq-item h3 {
     font-size: 1.1em;
   }
-
-  /* Mobile responsive for cookie banner */
-  .cookie-banner {
-    padding: 15px;
-  }
-
-  .cookie-content {
-    padding: 0;
-  }
-
-  .cookie-text h3 {
-    font-size: 1.1em;
-  }
-
-  .cookie-text p {
-    font-size: 0.9em;
-  }
-
-  .cookie-buttons {
-    flex-direction: column;
-  }
-
-  .cookie-btn {
-    width: 100%;
-    padding: 12px 20px;
-  }
-
-  .cookie-options {
-    gap: 8px;
-  }
-
-  .cookie-option {
-    padding: 6px;
-  }
 }
 
 @media (max-width: 400px) {
@@ -1031,10 +974,6 @@ button:hover {
   animation: incorrectShake 0.5s ease-in-out;
   background: linear-gradient(135deg, #5a2d2d 0%, #3a1a1a 100%) !important;
   border-color: #f44336 !important;
-}
-
-.screen-flash {
-  animation: screenFlash 0.3s ease-in-out;
 }
 
 .particle {
