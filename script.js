@@ -1064,15 +1064,29 @@ window.addEventListener('orientationchange', () => {
 
 // Function to initialize AdSense ads
 function initializeAds() {
-  if (typeof adsbygoogle !== 'undefined') {
-    // Re-initialize all adsbygoogle elements
-    const adElements = document.querySelectorAll('ins.adsbygoogle');
-    adElements.forEach(element => {
-      if (!element.hasAttribute('data-ad-status')) {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      }
-    });
+  console.log('Attempting to initialize ads...');
+
+  // Wait for AdSense script to load
+  if (typeof adsbygoogle === 'undefined') {
+    console.log('AdSense script not loaded yet, retrying...');
+    setTimeout(initializeAds, 500);
+    return;
   }
+
+  // Initialize all adsbygoogle elements
+  const adElements = document.querySelectorAll('ins.adsbygoogle');
+  console.log(`Found ${adElements.length} ad elements`);
+
+  adElements.forEach((element, index) => {
+    if (!element.hasAttribute('data-ad-status')) {
+      console.log(`Initializing ad ${index + 1}`);
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    } else {
+      console.log(`Ad ${index + 1} already initialized`);
+    }
+  });
+
+  console.log('AdSense ads initialization complete');
 }
 
 // ============================================================================
@@ -1087,4 +1101,9 @@ updateNoteControlsVisibility();
 handleScroll(); // Set initial scroll state
 
 // Initialize ads after a short delay to ensure DOM is ready
-setTimeout(initializeAds, 1000);
+setTimeout(initializeAds, 2000);
+
+// Also initialize ads when window is fully loaded
+window.addEventListener('load', () => {
+  setTimeout(initializeAds, 1000);
+});
