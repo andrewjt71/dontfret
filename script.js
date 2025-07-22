@@ -1059,6 +1059,23 @@ window.addEventListener('orientationchange', () => {
 });
 
 // ============================================================================
+// AD INITIALIZATION
+// ============================================================================
+
+// Function to initialize AdSense ads
+function initializeAds() {
+  if (typeof adsbygoogle !== 'undefined') {
+    // Re-initialize all adsbygoogle elements
+    const adElements = document.querySelectorAll('ins.adsbygoogle');
+    adElements.forEach(element => {
+      if (!element.hasAttribute('data-ad-status')) {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    });
+  }
+}
+
+// ============================================================================
 // INITIALIZATION
 // ============================================================================
 
@@ -1068,3 +1085,6 @@ newTask();
 updateInstructions();
 updateNoteControlsVisibility();
 handleScroll(); // Set initial scroll state
+
+// Initialize ads after a short delay to ensure DOM is ready
+setTimeout(initializeAds, 1000);
